@@ -85,7 +85,7 @@ type CoverArt = {
     b64: String,
 }
 
-export async function getPictureData(src: string) {
+export async function getPictureData(src: string): Promise<string> {
     const pictureString = await invoke<CoverArt>("get_cover_art", { src });
-    return `data:${pictureString.mime_type};base64, ${pictureString.b64}`
+    return pictureString.b64 ? `data:${pictureString.mime_type};base64, ${pictureString.b64}` : "";
 }

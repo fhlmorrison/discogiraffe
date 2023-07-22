@@ -2,8 +2,12 @@
     import type { MetadataEntry } from "./loadAssets";
     import type { FileEntry } from "@tauri-apps/api/fs";
     import { getMetadata, getPictureData, writeMetadata } from "./loadAssets";
+    import { onMount } from "svelte";
     export let song: FileEntry & { url: string };
-    $: audioFile = new Audio(song?.url || "");
+
+    let DEFAULT_IMAGE = "./record.png";
+
+    // $: audioFile = new Audio(song?.url || "");
     $: loadMetadata(song?.path);
     let metadata: MetadataEntry[] = [
         {
@@ -90,11 +94,13 @@
         }
     };
 
-    let pictureData: string = "";
+    let pictureData: string = DEFAULT_IMAGE;
 
     const getPicture = async () => {
-        pictureData = await getPictureData(song?.path);
+        pictureData = (await getPictureData(song?.path)) || DEFAULT_IMAGE;
     };
+
+    $: song && getPicture();
 </script>
 
 {song?.name || "No song selected"}
@@ -110,6 +116,16 @@
     {/if}
 </div>
 <div class="inputs">
+    <div class="cover-art">
+        <img
+            src={pictureData}
+            alt="cover art"
+            on:error={() => {
+                pictureData = DEFAULT_IMAGE;
+            }}
+            height="256px"
+        />
+    </div>
     {#each metadata as entry}
         <!-- content here -->
         <div class="field">
@@ -120,8 +136,6 @@
 </div>
 <button on:click={getPicture}> get pic </button>
 
-<img src={pictureData} alt="cover art" />
-
 <style>
     .save {
         background-color: #9d9;
@@ -131,11 +145,22 @@
     }
     .inputs {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
         grid-gap: 1em;
     }
     .field {
         display: flex;
         flex-direction: column;
+    }
+    .cover-art {
+        grid-area: 1 / 1 / 3 / 2;
+    }
+    .cover-art img {
+        height: 256px;
+        aspect-ratio: 1/1;
+        object-fit: cover;
+        border-radius: 10px;
+        align-content: center;
     }
 </style>
