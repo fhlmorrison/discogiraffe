@@ -20,7 +20,7 @@ fn greet(name: &str) -> String {
 }
 
 #[tauri::command]
-fn download_song(url: &str, download_path: &str) -> Result<String, CommandError> {
+async fn download_song(url: &str, download_path: &str) -> Result<String, CommandError> {
     let args = vec![
         Arg::new("-icwx"),
         Arg::new_with_arg("-f", "bestaudio/best"),
@@ -29,18 +29,21 @@ fn download_song(url: &str, download_path: &str) -> Result<String, CommandError>
         Arg::new_with_arg("--audio-quality", "0"),
         Arg::new("--embed-thumbnail"),
     ];
-    let link = url;
     let path = PathBuf::from(download_path);
-    args.iter().for_each(|arg| println!("{}", arg.to_string()));
 
-    let ytd = YoutubeDL::new(&path, args, link)?;
+    print!("yt-dlp");
+    args.iter().for_each(|arg| print!(" {}", arg.to_string()));
+    print!(" {}\n", url);
+
+    let ytd = YoutubeDL::new(&path, args, url)?;
 
     println!("Downloading song from {} to {}", url, path.display());
     let download = ytd.download()?;
 
-    println!("{}", download.output().to_string());
-    println!("{}", download.output_dir().display());
-    return Ok(download.output_dir().to_string_lossy().to_string());
+    let filename = parse_filename(download.output());
+    let filepath = path.join(filename);
+    println!("Downloaded song to {}", filepath.display());
+    return Ok(filepath.display().to_string());
 }
 
 #[tauri::command]
@@ -98,4 +101,41 @@ fn main() {
         })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+fn parse_filename(input: &str) -> String {
+    return input
+        .trim_end()
+        .trim_end_matches("\"")
+        .split("\"")
+        .last()
+        .unwrap()
+        .to_string();
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_parse_filename() {
+        let test = r#"[youtube] Extracting URL: https://www.youtube.com/watch?v=YERGdRtm5q0
+[youtube] YERGdRtm5q0: Downloading webpage
+[youtube] YERGdRtm5q0: Downloading android player API JSON
+[info] YERGdRtm5q0: Downloading 1 format(s): 251
+[info] Downloading video thumbnail 41 ...
+[info] Writing video thumbnail 41 to: jamesjamesjames - Glamorous-YERGdRtm5q0.webp
+[dashsegments] Total fragments: 1
+[download] Destination: jamesjamesjames - Glamorous-YERGdRtm5q0.webm
+[download] 100% of    4.45MiB in 00:00:01 at 4.33MiB/s
+[ExtractAudio] Destination: jamesjamesjames - Glamorous-YERGdRtm5q0.mp3
+Deleting original file jamesjamesjames - Glamorous-YERGdRtm5q0.webm (pass -k to keep)
+[ThumbnailsConvertor] Converting thumbnail "jamesjamesjames - Glamorous-YERGdRtm5q0.webp" to png
+[EmbedThumbnail] ffmpeg: Adding thumbnail to "jamesjamesjames - Glamorous-YERGdRtm5q0.mp3"
+
+"#;
+
+        let expected = "jamesjamesjames - Glamorous-YERGdRtm5q0.mp3".to_string();
+        let actual = super::parse_filename(test);
+        println!("{}", actual);
+        assert_eq!(expected, actual);
+    }
 }
