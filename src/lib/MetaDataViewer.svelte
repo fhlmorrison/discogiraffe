@@ -134,7 +134,6 @@
         </div>
     {/each}
 </div>
-<button on:click={getPicture}> get pic </button>
 
 <style>
     .save {
