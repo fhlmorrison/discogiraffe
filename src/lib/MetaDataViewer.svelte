@@ -2,12 +2,11 @@
     import type { MetadataEntry } from "./loadAssets";
     import type { FileEntry } from "@tauri-apps/api/fs";
     import { getMetadata, getPictureData, writeMetadata } from "./loadAssets";
-    import { onMount } from "svelte";
+    import SongPlayer from "./SongPlayer.svelte";
     export let song: FileEntry & { url: string };
 
     let DEFAULT_IMAGE = "./record.png";
 
-    // $: audioFile = new Audio(song?.url || "");
     $: loadMetadata(song?.path);
     let metadata: MetadataEntry[] = [
         {
@@ -134,6 +133,7 @@
         </div>
     {/each}
 </div>
+<SongPlayer url={song?.url || ""} />
 
 <style>
     .save {
