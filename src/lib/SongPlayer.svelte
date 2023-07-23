@@ -24,6 +24,7 @@
         const percent = x / rect.width;
         audioPlayer.currentTime = percent * duration;
     };
+    $: url && (paused = true);
 </script>
 
 <div class="song-player">
