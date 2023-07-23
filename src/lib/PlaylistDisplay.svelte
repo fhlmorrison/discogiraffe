@@ -1,8 +1,8 @@
 <script lang="ts">
     import type { PlaylistEntry } from "../store/playlist";
+    import PlaylistItem from "./PlaylistItem.svelte";
     import { invoke } from "@tauri-apps/api/tauri";
     import { playlist } from "../store/playlist";
-    import PlaylistItem from "./PlaylistItem.svelte";
     import { mapWithConcurrency } from "./concurrentMap.js";
     import { downloadDir } from "@tauri-apps/api/path";
     import { onMount } from "svelte/internal";

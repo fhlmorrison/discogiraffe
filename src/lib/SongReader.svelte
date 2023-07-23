@@ -1,20 +1,21 @@
 <script lang="ts">
     import SongListItem from "./SongListItem.svelte";
     import SongPlayer from "./MetaDataViewer.svelte";
-    import { loadAssets, loadSongsFromFolder } from "./loadAssets";
-    import type { FileEntry } from "@tauri-apps/api/fs";
+    import { loadSongsFromFolder } from "./loadAssets";
+    import type { OpenFileEntry } from "src/store/files";
+    import { openFiles } from "../store/files";
 
-    let openFiles: (FileEntry & { url: string })[];
+    // let openFiles: OpenFileEntry[];
 
     const openFolder = () =>
         loadSongsFromFolder().then((res) => {
             console.log(res);
-            openFiles = res;
+            $openFiles = res;
         });
 
-    let selected: FileEntry & { url: string };
+    let selected: OpenFileEntry;
 
-    const selectSong = (song: FileEntry & { url: string }) => {
+    const selectSong = (song: OpenFileEntry) => {
         selected = song;
     };
 </script>
@@ -29,7 +30,7 @@
     {#if openFiles}
         <div class="row">
             <ul>
-                {#each openFiles as file, i}
+                {#each $openFiles as file, i}
                     <SongListItem
                         song={file}
                         index={i}

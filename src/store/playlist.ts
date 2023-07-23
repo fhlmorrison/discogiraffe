@@ -57,4 +57,22 @@ export type PlaylistInfo = {
     };
 };
 
+type dbPlaylistEntry = Omit<
+    PlaylistEntry,
+    "__x_forwarded_for_ip"
+    & "_type"
+    & "ie_key"
+    & "live_status"
+>
+
+type dbPlaylist = Omit<
+    PlaylistInfo,
+    "version"
+    & "__files_to_move"
+    & "tags"
+    & "webpage_url_basename"
+    & "webpage_url_domain"
+>
+
+
 export const playlist = writable<PlaylistInfo>();
