@@ -1,7 +1,7 @@
 <script lang="ts">
-    import type { FileEntry } from "@tauri-apps/api/fs";
+    import type { OpenFileEntry } from "../store/files";
     import { createEventDispatcher } from "svelte";
-    export let song: FileEntry & { url: string };
+    export let song: OpenFileEntry;
     export let index: number;
 
     const dispatch = createEventDispatcher();

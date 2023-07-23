@@ -1,9 +1,9 @@
 <script lang="ts">
     import type { MetadataEntry } from "./loadAssets";
-    import type { FileEntry } from "@tauri-apps/api/fs";
     import { getMetadata, getPictureData, writeMetadata } from "./loadAssets";
     import SongPlayer from "./SongPlayer.svelte";
-    export let song: FileEntry & { url: string };
+    import type { OpenFileEntry } from "../store/files";
+    export let song: OpenFileEntry;
 
     let DEFAULT_IMAGE = "./record.png";
 
