@@ -77,12 +77,20 @@ fn get_cover_art(src: &str) -> Result<songs::CoverArt, CommandError> {
 }
 
 #[tauri::command]
-fn write_metadata(event: songs::WriteMetadataEvent) -> Result<(), CommandError> {
-    return songs::write_metadata(event);
+fn write_metadata(
+    app_handle: tauri::AppHandle,
+    event: songs::WriteMetadataEvent,
+) -> Result<(), CommandError> {
+    app_handle.db(|conn| database::update_metadata(conn, &event))?;
+    songs::write_metadata(event)?;
+    Ok(())
 }
 
 fn main() {
     tauri::Builder::default()
+        .manage(database::AppState {
+            db: Default::default(),
+        })
         .invoke_handler(tauri::generate_handler![
             greet,
             get_playlist_info,
@@ -93,10 +101,11 @@ fn main() {
         ])
         .setup(|app| {
             let handle = app.handle();
-            let db = database::init_db(&handle).unwrap();
-            let database_lock = std::sync::Mutex::new(Some(db));
-            let app_state = database::AppState { db: database_lock };
-            handle.manage(app_state);
+
+            let app_state: tauri::State<database::AppState> = handle.state();
+            let db = database::init_db(&handle).expect("failed to open database");
+            *app_state.db.lock().unwrap() = Some(db);
+
             Ok(())
         })
         .run(tauri::generate_context!())
@@ -111,6 +120,24 @@ fn parse_filename(input: &str) -> String {
         .last()
         .unwrap()
         .to_string();
+}
+
+trait DatabaseAccess {
+    fn db<F, T>(&self, operation: F) -> T
+    where
+        F: FnOnce(&rusqlite::Connection) -> T;
+}
+
+impl DatabaseAccess for tauri::AppHandle {
+    fn db<F, T>(&self, operation: F) -> T
+    where
+        F: FnOnce(&rusqlite::Connection) -> T,
+    {
+        let state = self.state::<database::AppState>();
+        let db_guard = state.db.lock().unwrap();
+        let db = db_guard.as_ref().unwrap();
+        operation(db)
+    }
 }
 
 #[cfg(test)]

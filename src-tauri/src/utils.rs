@@ -10,6 +10,9 @@ pub enum CommandError {
 
     #[error(transparent)]
     Id3(#[from] id3::Error),
+
+    #[error(transparent)]
+    Rusqlite(#[from] rusqlite::Error),
 }
 
 // impl std::error::Error for CommandError {
