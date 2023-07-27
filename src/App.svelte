@@ -1,9 +1,6 @@
 <script lang="ts">
   import { settings } from "./store/settings";
   import FaCog from "svelte-icons/fa/FaCog.svelte";
-  import PlaylistDisplay from "./lib/PlaylistDisplay.svelte";
-  import GetPl from "./lib/GetPlaylist.svelte";
-  import MetaDataReader from "./lib/SongReader.svelte";
   import Router from "./lib/Router.svelte";
 </script>
 
@@ -14,6 +11,7 @@
 </header>
 
 <main class="container">
+  <Router />
   <!-- <h1>YouTube Playlist Downloader</h1>
   <div class="row">
     <div class="playlist-section">
@@ -26,7 +24,6 @@
   <div class="row">
     <MetaDataReader />
   </div> -->
-  <Router />
 </main>
 
 <style>

@@ -1,7 +1,8 @@
 <script lang="ts">
+    import GetPlaylist from "./GetPlaylist.svelte";
     import PlaylistDisplay from "./PlaylistDisplay.svelte";
-    import GetPl from "./GetPlaylist.svelte";
     import MetaDataReader from "./SongReader.svelte";
+    import PlaylistLibrary from "./PlaylistLibrary.svelte";
 
     type Route = {
         name: string;
@@ -9,13 +10,16 @@
         component: any;
     };
 
-    let currentRoute: Route;
-
     let routes: Route[] = [
         {
-            name: "Get Playlist",
+            name: "Playlist Library",
             path: "/",
-            component: GetPl,
+            component: PlaylistLibrary,
+        },
+        {
+            name: "Get Playlist",
+            path: "/getplaylist",
+            component: GetPlaylist,
         },
         {
             name: "Playlist Display",
@@ -28,6 +32,8 @@
             component: MetaDataReader,
         },
     ];
+
+    let currentRoute: Route = routes[0];
 </script>
 
 <div>

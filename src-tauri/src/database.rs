@@ -13,11 +13,13 @@ pub struct DbSong {
     pub artist: Option<String>,
     pub album: Option<String>,
     pub audio_source_url: Option<String>,
+    pub uploader: Option<String>,
 }
 
 pub struct DbPlaylist {
     pub id: i32,
     pub title: String,
+    pub description: String,
     pub url: String,
     pub thumbnail: String,
     pub path: String,
@@ -116,6 +118,7 @@ pub fn get_song(conn: &Connection, path: &str) -> Result<DbSong> {
             artist: row.get(6)?,
             album: row.get(7)?,
             audio_source_url: row.get(8)?,
+            uploader: row.get(9)?,
         })
     });
 }
@@ -127,10 +130,11 @@ pub fn get_playlists(conn: &Connection) -> Result<Vec<DbPlaylist>> {
         Ok(DbPlaylist {
             id: row.get(0)?,
             title: row.get(1)?,
-            url: row.get(2)?,
-            thumbnail: row.get(3)?,
-            path: row.get(4)?,
-            downloaded: row.get(5)?,
+            description: row.get(2)?,
+            url: row.get(3)?,
+            thumbnail: row.get(4)?,
+            path: row.get(5)?,
+            downloaded: row.get(6)?,
         })
     })?;
 
