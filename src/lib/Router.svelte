@@ -3,6 +3,7 @@
     import PlaylistDisplay from "./PlaylistDisplay.svelte";
     import MetaDataReader from "./SongReader.svelte";
     import PlaylistLibrary from "./PlaylistLibrary.svelte";
+    import SongReader from "./SongReader.svelte";
 
     type Route = {
         name: string;
@@ -39,13 +40,14 @@
 <div>
     Tabs
 
-    {#each routes as route}
+    <!-- {#each routes as route}
         <button
             on:click={() => {
                 currentRoute = route;
             }}>{route.name}</button
         >
-    {/each}
+    {/each} -->
+    <SongReader />
 </div>
 <div>
     <svelte:component this={currentRoute?.component} />

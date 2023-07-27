@@ -7,7 +7,7 @@
     const dispatch = createEventDispatcher();
 
     const select = () => {
-        dispatch("select", song);
+        dispatch("select", index);
     };
 </script>
 
