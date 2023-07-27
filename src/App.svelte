@@ -4,6 +4,7 @@
   import PlaylistDisplay from "./lib/PlaylistDisplay.svelte";
   import GetPl from "./lib/GetPlaylist.svelte";
   import MetaDataReader from "./lib/SongReader.svelte";
+  import Router from "./lib/Router.svelte";
 </script>
 
 <header>
@@ -13,7 +14,7 @@
 </header>
 
 <main class="container">
-  <h1>YouTube Playlist Downloader</h1>
+  <!-- <h1>YouTube Playlist Downloader</h1>
   <div class="row">
     <div class="playlist-section">
       <div class="row">
@@ -24,7 +25,8 @@
   </div>
   <div class="row">
     <MetaDataReader />
-  </div>
+  </div> -->
+  <Router />
 </main>
 
 <style>

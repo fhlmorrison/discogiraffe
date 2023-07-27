@@ -54,6 +54,8 @@
             <PlaylistItem {item} bind:selected={selected[i]} />
         {/each}
     </div>
+{:else}
+    <p>No playlist loaded</p>
 {/if}
 
 <style>
