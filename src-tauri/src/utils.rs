@@ -13,6 +13,9 @@ pub enum CommandError {
 
     #[error(transparent)]
     Rusqlite(#[from] rusqlite::Error),
+
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
 }
 
 // impl std::error::Error for CommandError {

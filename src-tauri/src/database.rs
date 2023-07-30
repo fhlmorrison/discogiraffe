@@ -4,25 +4,25 @@ use tauri::AppHandle;
 use crate::songs::{MetadataKey, WriteMetadataEvent};
 
 pub struct DbSong {
-    pub id: i32,
+    pub id: String,
     pub title: String,
     pub url: String,
-    pub thumbnail: String,
-    pub path: String,
+    pub thumbnail: Option<String>,
+    pub path: Option<String>,
     pub downloaded: bool,
     pub artist: Option<String>,
     pub album: Option<String>,
     pub audio_source_url: Option<String>,
-    pub uploader: Option<String>,
+    pub channel: Option<String>,
 }
 
 pub struct DbPlaylist {
-    pub id: i32,
+    pub id: String,
     pub title: String,
     pub description: String,
     pub url: String,
-    pub thumbnail: String,
-    pub path: String,
+    pub thumbnail: Option<String>,
+    pub path: Option<String>,
     pub downloaded: bool,
 }
 
@@ -55,7 +55,7 @@ pub fn init_db(handle: &AppHandle) -> Result<Connection> {
 
     conn.execute(
         "CREATE TABLE IF NOT EXISTS songs (
-            id INTEGER PRIMARY KEY,
+            id STRING PRIMARY KEY,
             title TEXT NOT NULL,
             url TEXT NOT NULL,
             thumbnail TEXT NOT NULL,
@@ -70,7 +70,7 @@ pub fn init_db(handle: &AppHandle) -> Result<Connection> {
 
     conn.execute(
         "CREATE TABLE IF NOT EXISTS playlists (
-            id INTEGER PRIMARY KEY,
+            id STRING PRIMARY KEY,
             title TEXT NOT NULL,
             url TEXT NOT NULL,
             thumbnail TEXT NOT NULL,
@@ -82,8 +82,8 @@ pub fn init_db(handle: &AppHandle) -> Result<Connection> {
 
     conn.execute(
         "CREATE TABLE IF NOT EXISTS playlist_songs (
-            id INTEGER PRIMARY KEY,
-            playlist_id INTEGER NOT NULL,
+            id STRING PRIMARY KEY,
+            playlist_id STRING NOT NULL,
             song_id INTEGER NOT NULL,
             FOREIGN KEY (playlist_id) REFERENCES playlists(id),
             FOREIGN KEY (song_id) REFERENCES songs(id)
@@ -118,7 +118,7 @@ pub fn get_song(conn: &Connection, path: &str) -> Result<DbSong> {
             artist: row.get(6)?,
             album: row.get(7)?,
             audio_source_url: row.get(8)?,
-            uploader: row.get(9)?,
+            channel: row.get(9)?,
         })
     });
 }

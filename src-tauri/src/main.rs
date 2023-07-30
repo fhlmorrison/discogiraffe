@@ -4,6 +4,7 @@
 mod database;
 mod songs;
 mod utils;
+mod ytdl;
 
 use crate::utils::CommandError;
 
@@ -64,6 +65,10 @@ async fn get_playlist_info(url: &str) -> Result<String, CommandError> {
     // println!("{}", download.output().to_string());
 
     return Ok(download.output().to_string());
+}
+
+async fn add_playlist(url: &str) -> Result<(), CommandError> {
+    Ok(())
 }
 
 #[tauri::command]
