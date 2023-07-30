@@ -1,6 +1,10 @@
 <script lang="ts">
+    // ignore this
+    import FaStepBackward from "svelte-icons/fa/FaStepBackward.svelte";
+    import FaStepForward from "svelte-icons/fa/FaStepForward.svelte";
     import FaPlayCircle from "svelte-icons/fa/FaPlayCircle.svelte";
     import FaPauseCircle from "svelte-icons/fa/FaPauseCircle.svelte";
+    import { createEventDispatcher } from "svelte";
     // import { currentTime } from "./../store/player";
     let time = 0;
     export let url: string = "";
@@ -10,6 +14,8 @@
     // let currentTime = 0;
     let duration = 0;
     let paused = true;
+
+    const dispatch = createEventDispatcher();
 
     const cleanTime = (seconds) => {
         const hours = Math.floor(seconds / 3600);
@@ -27,19 +33,37 @@
         audioPlayer.currentTime = percent * duration;
     };
     $: url && (paused = true);
+
+    const prev = () => {
+        console.log("prev sent");
+        dispatch("prev", null);
+    };
+
+    const next = () => {
+        console.log("next sent");
+        dispatch("next", null);
+    };
 </script>
 
 <div class="song-player">
-    <div class="controls">
-        {#if paused}
-            <div class="button" on:click={() => audioPlayer.play()}>
-                <FaPlayCircle />
+    <div class="controls-row">
+        <div class="controls">
+            <div class="button skip" on:click={prev}>
+                <FaStepBackward />
             </div>
-        {:else}
-            <div class="button" on:click={() => audioPlayer.pause()}>
-                <FaPauseCircle />
+            {#if paused}
+                <div class="button play" on:click={() => audioPlayer.play()}>
+                    <FaPlayCircle />
+                </div>
+            {:else}
+                <div class="button play" on:click={() => audioPlayer.pause()}>
+                    <FaPauseCircle />
+                </div>
+            {/if}
+            <div class="button skip" on:click={next}>
+                <FaStepForward />
             </div>
-        {/if}
+        </div>
     </div>
     <div class="progress" on:click={jumpto}>
         <div
@@ -63,12 +87,13 @@
     }
 
     .progress {
-        width: 100%;
+        width: clamp(500px, 33%, 100%);
         height: 5px;
         background-color: rgba(200, 200, 200, 50);
         position: relative;
         border-radius: var(--progress-bar-radius);
         overflow: hidden;
+        margin: auto;
     }
     .progress-bar {
         height: 100%;
@@ -83,6 +108,11 @@
     }
     audio {
         display: none !important;
+    }
+    .controls-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
     }
     .controls {
         display: grid;
@@ -99,6 +129,9 @@
         width: 60px;
         align-self: center;
         justify-self: center;
-        grid-area: 1 / 2 / 3 / 3;
+    }
+    .skip {
+        height: 40px;
+        width: 40px;
     }
 </style>

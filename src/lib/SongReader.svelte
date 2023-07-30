@@ -14,10 +14,14 @@
         });
 
     let selected: OpenFileEntry;
+    let selectedIndex = 0;
 
-    const selectSong = (song: OpenFileEntry) => {
-        selected = song;
+    const selectSong = (index: number) => {
+        selectedIndex = index;
     };
+
+    $: $openFiles && $openFiles.length > 0 && (selectedIndex = 0);
+    $: selected = $openFiles[selectedIndex];
 </script>
 
 <div class="col">
@@ -25,7 +29,18 @@
         <button on:click={openFolder}>Open Folder</button>
     </div>
 
-    <SongPlayer song={selected} />
+    <SongPlayer
+        song={selected}
+        on:next={() => {
+            console.log("next received");
+            selectedIndex = (selectedIndex + 1) % $openFiles.length;
+        }}
+        on:prev={() => {
+            console.log("prev received");
+            selectedIndex =
+                (selectedIndex - 1 + $openFiles.length) % $openFiles.length;
+        }}
+    />
 
     {#if openFiles}
         <div class="row">

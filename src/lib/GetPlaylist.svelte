@@ -5,6 +5,7 @@
 
   let url = "";
   let errorMessage = "";
+  let loading;
 
   const urlFormat = "https://www.youtube.com/playlist?list=";
   const error = (msg: string) => {
@@ -24,6 +25,7 @@
         await invoke<string>("get_playlist_info", { url })
       ) as PlaylistInfo
     );
+    return true;
   }
 </script>
 
@@ -33,8 +35,21 @@
     placeholder={errorMessage || "Enter a YouTube playlist URL..."}
     bind:value={url}
   />
-  <button on:click={get}>Get Playlist Info</button>
+  <button
+    on:click={() => {
+      loading = get();
+    }}>Get Playlist Info</button
+  >
 </div>
+{#await loading}
+  <p>loading...</p>
+{:then res}
+  {#if res}
+    <p>playlist loaded</p>
+  {/if}
+{:catch error}
+  <p style="color: red">{error.message}</p>
+{/await}
 
 <style>
   input {
