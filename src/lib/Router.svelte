@@ -38,16 +38,14 @@
 </script>
 
 <div>
-    Tabs
-
-    <!-- {#each routes as route}
+    {#each routes as route}
         <button
             on:click={() => {
                 currentRoute = route;
             }}>{route.name}</button
         >
-    {/each} -->
-    <SongReader />
+    {/each}
+    <!-- <SongReader /> -->
 </div>
 <div>
     <svelte:component this={currentRoute?.component} />

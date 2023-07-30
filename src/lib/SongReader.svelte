@@ -1,6 +1,6 @@
 <script lang="ts">
     import SongListItem from "./SongListItem.svelte";
-    import SongPlayer from "./MetaDataViewer.svelte";
+    import MetaDataViewer from "./MetaDataViewer.svelte";
     import { loadSongsFromFolder } from "./loadAssets";
     import type { OpenFileEntry } from "src/store/files";
     import { openFiles } from "../store/files";
@@ -29,7 +29,7 @@
         <button on:click={openFolder}>Open Folder</button>
     </div>
 
-    <SongPlayer
+    <MetaDataViewer
         song={selected}
         on:next={() => {
             console.log("next received");
