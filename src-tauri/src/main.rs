@@ -49,22 +49,8 @@ async fn download_song(url: &str, download_path: &str) -> Result<String, Command
 
 #[tauri::command]
 async fn get_playlist_info(url: &str) -> Result<String, CommandError> {
-    let args = vec![
-        Arg::new("-J"),
-        Arg::new("--skip-download"),
-        Arg::new("--flat-playlist"),
-    ];
-    let link = url;
-    let path = PathBuf::from("./");
-
-    let ytd = YoutubeDL::new(&path, args, link)?;
-
-    println!("Downloading playlist info for {}", url);
-    let download = ytd.download()?;
-
-    // println!("{}", download.output().to_string());
-
-    return Ok(download.output().to_string());
+    let data = ytdl::get_playlist_info(url).await?;
+    return Ok(data);
 }
 
 async fn add_playlist(url: &str) -> Result<(), CommandError> {

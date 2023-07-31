@@ -159,6 +159,10 @@ pub fn get_playlist_songs(conn: &Connection) -> Result<Vec<DbPlaylistSong>> {
     Ok(result)
 }
 
+pub fn add_playlist(conn: &Connection, playlist: DbPlaylist, songs: Vec<DbSong>) -> Result<()> {
+    Ok(())
+}
+
 pub fn update_metadata(conn: &Connection, event: &WriteMetadataEvent) -> Result<()> {
     // Add metadata to song
 
