@@ -1,5 +1,6 @@
 use crate::database::{DbPlaylist, DbSong};
 use crate::utils::CommandError;
+use rusqlite::{params, Connection};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use ytd_rs::{Arg, YoutubeDL};
@@ -83,7 +84,7 @@ fn cast_playlist_info(pl: &YTPlaylist) -> DbPlaylist {
     }
 }
 
-pub async fn add_to_db(url: &str) -> Result<(), CommandError> {
+pub async fn add_to_db(db: &mut Connection, url: &str) -> Result<(), CommandError> {
     let playlist_info = parse_playlist(url).await?;
     let playlist = cast_playlist_info(&playlist_info);
     let songs: Vec<DbSong> = playlist_info
@@ -91,6 +92,46 @@ pub async fn add_to_db(url: &str) -> Result<(), CommandError> {
         .iter()
         .map(|song| cast_song(song))
         .collect();
+
+    // TODO: Add transaction
+
+    let tx = db.transaction()?;
+
+    tx.execute(
+        "INSERT INTO playlists (id, title, description, url, thumbnail, path, downloaded) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
+        params![
+            playlist.id,
+            playlist.title,
+            playlist.description,
+            playlist.url,
+            playlist.thumbnail,
+            playlist.path,
+            playlist.downloaded
+        ],
+    )?;
+
+    songs.iter().for_each(|song| {
+        tx.execute(
+            "INSERT INTO songs 
+            (id, title, url, thumbnail, path, downloaded, artist, album, audio_source_url, channel) 
+            VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)",
+            params![
+                song.id,
+                song.title,
+                song.url,
+                song.thumbnail,
+                song.path,
+                song.downloaded,
+                song.artist,
+                song.album,
+                song.audio_source_url,
+                song.channel
+            ],
+        )
+        .unwrap();
+    });
+
+    tx.commit()?;
 
     Ok(())
 }
