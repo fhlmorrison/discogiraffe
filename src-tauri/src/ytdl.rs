@@ -93,12 +93,12 @@ pub async fn add_to_db(db: &mut Connection, url: &str) -> Result<(), CommandErro
         .map(|song| cast_song(song))
         .collect();
 
-    // TODO: Add transaction
-
     let tx = db.transaction()?;
 
     tx.execute(
-        "INSERT INTO playlists (id, title, description, url, thumbnail, path, downloaded) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
+        "INSERT INTO playlists (id, title, description, url, thumbnail, path, downloaded) 
+        VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7) ON CONFLICT UPDATE 
+        SET title = ?2, description = ?3, url = ?4, thumbnail = ?5, path = ?6, downloaded = ?7",
         params![
             playlist.id,
             playlist.title,
@@ -110,11 +110,15 @@ pub async fn add_to_db(db: &mut Connection, url: &str) -> Result<(), CommandErro
         ],
     )?;
 
+    // TODO: replace unwraps
+
     songs.iter().for_each(|song| {
         tx.execute(
             "INSERT INTO songs 
             (id, title, url, thumbnail, path, downloaded, artist, album, audio_source_url, channel) 
-            VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)",
+            VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)
+            ON CONFLICT DO NOTHING
+            ",
             params![
                 song.id,
                 song.title,
@@ -127,6 +131,11 @@ pub async fn add_to_db(db: &mut Connection, url: &str) -> Result<(), CommandErro
                 song.audio_source_url,
                 song.channel
             ],
+        )
+        .unwrap();
+        tx.execute(
+            "INSERT INTO playlist_songs (playlist_id, song_id) VALUES (?1, ?2)",
+            params![playlist.id.to_owned(), song.id.to_owned()],
         )
         .unwrap();
     });
