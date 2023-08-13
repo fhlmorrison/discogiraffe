@@ -64,11 +64,12 @@ pub fn init_db(handle: &AppHandle) -> Result<Connection> {
             title TEXT NOT NULL,
             url TEXT NOT NULL,
             thumbnail TEXT NOT NULL,
-            path TEXT NOT NULL,
-            downloaded INTEGER NOT NULL,
+            path TEXT,
+            downloaded BOOLEAN NOT NULL,
             artist TEXT,
             album TEXT,
-            audio_source_url TEXT
+            audio_source_url TEXT,
+            channel TEXT NOT NULL
         )",
         [],
     )?;
@@ -77,10 +78,11 @@ pub fn init_db(handle: &AppHandle) -> Result<Connection> {
         "CREATE TABLE IF NOT EXISTS playlists (
             id STRING PRIMARY KEY,
             title TEXT NOT NULL,
+            description TEXT,
             url TEXT NOT NULL,
             thumbnail TEXT NOT NULL,
-            path TEXT NOT NULL,
-            downloaded INTEGER NOT NULL
+            path TEXT,
+            downloaded BOOLEAN NOT NULL
         )",
         [],
     )?;

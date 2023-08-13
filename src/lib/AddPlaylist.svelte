@@ -1,8 +1,6 @@
 <script lang="ts">
-    import { invoke } from "@tauri-apps/api/tauri";
-    import { playlist } from "../store/playlist";
-    import type { PlaylistInfo } from "../store/playlist";
     import { createEventDispatcher } from "svelte";
+    import { addPlaylist } from "../store/playlist";
 
     const dispatch = createEventDispatcher();
 
@@ -16,20 +14,19 @@
         console.error(msg);
     };
 
-    async function get() {
-        // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+    async function add() {
         if (!url.startsWith(urlFormat)) {
             error("Invalid Playlist URL");
             return;
         }
-        errorMessage = "";
-        playlist.set(
-            JSON.parse(
-                await invoke<string>("get_playlist_info", { url })
-            ) as PlaylistInfo
-        );
-        dispatch("load");
-        return true;
+        try {
+            await addPlaylist(url);
+            dispatch("load");
+            return true;
+        } catch (e) {
+            error(e);
+            return false;
+        }
     }
 
     const closeModal = () => {
@@ -47,8 +44,8 @@
         />
         <button
             on:click={() => {
-                loading = get();
-            }}>Get Playlist Info</button
+                loading = add();
+            }}>Add to Library</button
         >
     </div>
     {#await loading}

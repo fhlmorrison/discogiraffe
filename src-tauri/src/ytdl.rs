@@ -97,7 +97,7 @@ pub fn add_to_db<'a>(db: &Connection, url: &str) -> Result<(), CommandError> {
 
     tx.execute(
         "INSERT INTO playlists (id, title, description, url, thumbnail, path, downloaded) 
-        VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7) ON CONFLICT UPDATE 
+        VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7) ON CONFLICT(id) DO UPDATE 
         SET title = ?2, description = ?3, url = ?4, thumbnail = ?5, path = ?6, downloaded = ?7",
         params![
             playlist.id,

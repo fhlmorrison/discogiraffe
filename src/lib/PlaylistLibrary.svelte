@@ -1,5 +1,5 @@
 <script>
-    import { playlistLibrary } from "../store/playlist";
+    import { loadPlaylists, playlistLibrary } from "../store/playlist";
     import AddPlaylist from "./AddPlaylist.svelte";
 
     playlistLibrary.set([
@@ -23,7 +23,8 @@
     const selectPlaylist = (playlist) => {
         console.log(playlist);
     };
-    const loadPlaylists = () => {
+    const loadList = () => {
+        loadPlaylists();
         console.log("loaded");
     };
 </script>
@@ -35,7 +36,7 @@
             on:close={closeModal}
             on:load={() => {
                 closeModal();
-                loadPlaylists();
+                loadList();
             }}
         />
     {/if}

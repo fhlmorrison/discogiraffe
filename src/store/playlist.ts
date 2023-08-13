@@ -108,6 +108,17 @@ async function savePlaylist(playlist: PlaylistInfo) {
     const result = await invoke("savePlaylist", { playlistInfo, songs });
 }
 
+export async function addPlaylist(url: string) {
+    const result = await invoke("add_playlist", { url });
+    return result;
+}
+
+export async function loadPlaylists() {
+    const playlists = await invoke<dbPlaylist[]>("load_playlists");
+    playlistLibrary.set(playlists);
+    // console.log(playlists);
+    return playlists;
+}
 
 export const playlist = writable<PlaylistInfo>();
 

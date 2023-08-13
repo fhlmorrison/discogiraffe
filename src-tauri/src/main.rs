@@ -8,7 +8,7 @@ mod ytdl;
 
 use crate::utils::CommandError;
 
-use tauri::Manager;
+use tauri::{AppHandle, Manager};
 
 use std::path::PathBuf;
 use ytd_rs::{Arg, YoutubeDL};
@@ -49,12 +49,18 @@ async fn download_song(url: &str, download_path: &str) -> Result<String, Command
 
 #[tauri::command]
 async fn get_playlist_info(url: &str) -> Result<String, CommandError> {
-    let data = ytdl::get_playlist_info(url).await?;
+    let data = ytdl::get_playlist_info(url)?;
     return Ok(data);
 }
 
-async fn add_playlist(url: &str) -> Result<(), CommandError> {
-    Ok(())
+#[tauri::command]
+async fn add_playlist(handle: AppHandle, url: &str) -> Result<(), CommandError> {
+    return handle.db(|conn| ytdl::add_to_db(conn, url));
+}
+
+#[tauri::command]
+async fn load_playlists(handle: AppHandle) -> Result<Vec<database::DbPlaylist>, CommandError> {
+    return handle.db(|conn| database::get_playlists(conn));
 }
 
 #[tauri::command]
@@ -88,7 +94,9 @@ fn main() {
             download_song,
             get_metadata,
             write_metadata,
-            get_cover_art
+            get_cover_art,
+            add_playlist,
+            load_playlists
         ])
         .setup(|app| {
             let handle = app.handle();
