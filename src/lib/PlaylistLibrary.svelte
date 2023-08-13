@@ -1,5 +1,6 @@
 <script>
     import { playlistLibrary } from "../store/playlist";
+    import AddPlaylist from "./AddPlaylist.svelte";
 
     playlistLibrary.set([
         {
@@ -11,14 +12,33 @@
         },
     ]);
 
-    const addPlaylist = () => {};
+    let adding = false;
+
+    const addPlaylist = () => {
+        adding = true;
+    };
+    const closeModal = () => {
+        adding = false;
+    };
     const selectPlaylist = (playlist) => {
         console.log(playlist);
+    };
+    const loadPlaylists = () => {
+        console.log("loaded");
     };
 </script>
 
 <div class="grid">
     <div class="card add" on:click={addPlaylist}>+</div>
+    {#if adding}
+        <AddPlaylist
+            on:close={closeModal}
+            on:load={() => {
+                closeModal();
+                loadPlaylists();
+            }}
+        />
+    {/if}
     {#each $playlistLibrary as playlist}
         <div class="card playlist" on:click={() => selectPlaylist(playlist)}>
             <img src={playlist.thumbnail} alt={playlist.title} />
