@@ -2,7 +2,10 @@ use rusqlite::{Connection, Result};
 use tauri::AppHandle;
 
 use crate::songs::{MetadataKey, WriteMetadataEvent};
+use crate::utils::CommandError;
+use serde::{Deserialize, Serialize};
 
+#[derive(Serialize, Deserialize)]
 pub struct DbSong {
     pub id: String,
     pub title: String,
@@ -16,6 +19,7 @@ pub struct DbSong {
     pub channel: Option<String>,
 }
 
+#[derive(Serialize, Deserialize)]
 pub struct DbPlaylist {
     pub id: String,
     pub title: String,
@@ -26,6 +30,7 @@ pub struct DbPlaylist {
     pub downloaded: bool,
 }
 
+#[derive(Serialize, Deserialize)]
 pub struct DbPlaylistSong {
     pub id: i32,
     pub playlist_id: i32,
@@ -123,7 +128,7 @@ pub fn get_song(conn: &Connection, path: &str) -> Result<DbSong> {
     });
 }
 
-pub fn get_playlists(conn: &Connection) -> Result<Vec<DbPlaylist>> {
+pub fn get_playlists(conn: &Connection) -> Result<Vec<DbPlaylist>, CommandError> {
     let mut stmt = conn.prepare("SELECT * FROM playlists")?;
 
     let rows = stmt.query_map([], |row| {
