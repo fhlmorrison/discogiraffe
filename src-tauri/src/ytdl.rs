@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use ytd_rs::{Arg, YoutubeDL};
 
-pub async fn get_playlist_info(url: &str) -> Result<String, CommandError> {
+pub fn get_playlist_info(url: &str) -> Result<String, CommandError> {
     let args = vec![
         Arg::new("-J"),
         Arg::new("--skip-download"),
@@ -51,8 +51,8 @@ pub struct YTPlaylist {
     pub entries: Vec<YTSong>,
 }
 
-pub async fn parse_playlist(url: &str) -> Result<YTPlaylist, CommandError> {
-    let data = get_playlist_info(url).await?;
+pub fn parse_playlist(url: &str) -> Result<YTPlaylist, CommandError> {
+    let data = get_playlist_info(url)?;
     let playlist: YTPlaylist = serde_json::from_str(&data)?;
     return Ok(playlist);
 }
@@ -84,8 +84,8 @@ fn cast_playlist_info(pl: &YTPlaylist) -> DbPlaylist {
     }
 }
 
-pub async fn add_to_db(db: &mut Connection, url: &str) -> Result<(), CommandError> {
-    let playlist_info = parse_playlist(url).await?;
+pub fn add_to_db<'a>(db: &Connection, url: &str) -> Result<(), CommandError> {
+    let playlist_info = parse_playlist(url)?;
     let playlist = cast_playlist_info(&playlist_info);
     let songs: Vec<DbSong> = playlist_info
         .entries
@@ -93,7 +93,7 @@ pub async fn add_to_db(db: &mut Connection, url: &str) -> Result<(), CommandErro
         .map(|song| cast_song(song))
         .collect();
 
-    let tx = db.transaction()?;
+    let tx = db.unchecked_transaction()?;
 
     tx.execute(
         "INSERT INTO playlists (id, title, description, url, thumbnail, path, downloaded) 
@@ -151,9 +151,9 @@ mod tests {
 
     #[test]
     fn test_parse_playlist() {
-        let data = block_on(parse_playlist(
+        let data = parse_playlist(
             "https://www.youtube.com/playlist?list=PLEfmir4ilkztwpqgkqKBle-i86tN_wOsJ",
-        ));
+        );
         match data {
             Ok(val) => println!("{}", val.title),
             Err(e) => println!("{}", e),
