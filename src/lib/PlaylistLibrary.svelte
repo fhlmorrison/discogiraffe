@@ -48,6 +48,15 @@
             <div class="playlist-description">{playlist.description}</div>
         </div>
     {/each}
+    {#if !$playlistLibrary.length}
+        <div class="card playlist">
+            <img src={"/record.png"} alt={"test image"} />
+            <div class="playlist-title">{"Example Playlist"}</div>
+            <div class="playlist-description">
+                {"Use the plus button to save playlist from YouTube"}
+            </div>
+        </div>
+    {/if}
 </div>
 
 <style>
