@@ -1,7 +1,6 @@
 <script lang="ts">
   import { invoke } from "@tauri-apps/api/tauri";
-  import { playlist } from "../store/playlist";
-  import type { PlaylistInfo } from "../store/playlist";
+  import { playlist, type dbPlaylistFull } from "../store/playlist";
 
   let url = "";
   let errorMessage = "";
@@ -20,11 +19,8 @@
       return;
     }
     errorMessage = "";
-    playlist.set(
-      JSON.parse(
-        await invoke<string>("get_playlist_info", { url })
-      ) as PlaylistInfo
-    );
+    const data = await invoke<dbPlaylistFull>("get_playlist_info", { url });
+    playlist.set(data);
     return true;
   }
 </script>

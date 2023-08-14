@@ -1,11 +1,11 @@
-use crate::database::{DbPlaylist, DbSong};
+use crate::database::{DbPlaylist, DbPlaylistFull, DbSong};
 use crate::utils::CommandError;
 use rusqlite::{params, Connection};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use ytd_rs::{Arg, YoutubeDL};
 
-pub fn get_playlist_info(url: &str) -> Result<String, CommandError> {
+pub fn fetch_playlist(url: &str) -> Result<String, CommandError> {
     let args = vec![
         Arg::new("-J"),
         Arg::new("--skip-download"),
@@ -38,10 +38,11 @@ pub struct YTSong {
     pub url: String,
     pub thumbnails: Vec<YTThumbnail>,
     pub channel: Option<String>,
+    pub duration: f32,
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct YTPlaylist {
+struct YTPlaylist {
     pub id: String,
     pub title: String,
     pub description: String,
@@ -51,8 +52,8 @@ pub struct YTPlaylist {
     pub entries: Vec<YTSong>,
 }
 
-pub fn parse_playlist(url: &str) -> Result<YTPlaylist, CommandError> {
-    let data = get_playlist_info(url)?;
+fn parse_playlist(url: &str) -> Result<YTPlaylist, CommandError> {
+    let data = fetch_playlist(url)?;
     let playlist: YTPlaylist = serde_json::from_str(&data)?;
     return Ok(playlist);
 }
@@ -69,6 +70,7 @@ fn cast_song(song: &YTSong) -> DbSong {
         album: None,
         audio_source_url: None,
         channel: song.channel.to_owned(),
+        duration: song.duration,
     };
 }
 
@@ -82,6 +84,20 @@ fn cast_playlist_info(pl: &YTPlaylist) -> DbPlaylist {
         path: None,
         downloaded: false,
     }
+}
+
+pub fn get_playlist_info(url: &str) -> Result<DbPlaylistFull, CommandError> {
+    let playlist_info = parse_playlist(url)?;
+    let playlist = cast_playlist_info(&playlist_info);
+    let songs: Vec<DbSong> = playlist_info
+        .entries
+        .iter()
+        .map(|song| cast_song(song))
+        .collect();
+
+    let result = DbPlaylistFull { playlist, songs };
+
+    Ok(result)
 }
 
 pub fn add_to_db<'a>(db: &Connection, url: &str) -> Result<(), CommandError> {
@@ -115,8 +131,8 @@ pub fn add_to_db<'a>(db: &Connection, url: &str) -> Result<(), CommandError> {
     songs.iter().for_each(|song| {
         tx.execute(
             "INSERT INTO songs 
-            (id, title, url, thumbnail, path, downloaded, artist, album, audio_source_url, channel) 
-            VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)
+            (id, title, url, thumbnail, path, downloaded, artist, album, audio_source_url, channel, duration) 
+            VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)
             ON CONFLICT DO NOTHING
             ",
             params![
@@ -129,12 +145,13 @@ pub fn add_to_db<'a>(db: &Connection, url: &str) -> Result<(), CommandError> {
                 song.artist,
                 song.album,
                 song.audio_source_url,
-                song.channel
+                song.channel,
+                song.duration
             ],
         )
         .unwrap();
         tx.execute(
-            "INSERT INTO playlist_songs (playlist_id, song_id) VALUES (?1, ?2)",
+            "INSERT INTO playlist_songs (playlist_id, song_id) VALUES (?1, ?2) ON CONFLICT DO NOTHING",
             params![playlist.id.to_owned(), song.id.to_owned()],
         )
         .unwrap();

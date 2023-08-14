@@ -1,7 +1,7 @@
 <script lang="ts">
     import FaPlay from "svelte-icons/fa/FaPlay.svelte";
-    import type { PlaylistEntry } from "../store/playlist";
-    export let item: PlaylistEntry;
+    import type { dbSong } from "../store/playlist";
+    export let item: dbSong;
 
     export let selected = false;
 
@@ -12,7 +12,7 @@
 
 <div class="item">
     <div class="thumbnail">
-        <img src={item.thumbnails[0].url} alt={item.id} height="90px" />
+        <img src={item.thumbnail} alt={item.id} height="90px" />
         <a class="link" target="_blank" href={item.url}>
             <FaPlay />
         </a>

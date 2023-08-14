@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { PlaylistEntry } from "../store/playlist";
+    import type { dbSong } from "../store/playlist";
     import PlaylistItem from "./PlaylistItem.svelte";
     import { invoke } from "@tauri-apps/api/tauri";
     import { playlist } from "../store/playlist";
@@ -8,33 +8,32 @@
     import { onMount } from "svelte/internal";
 
     //TODO: Add shift click multi select
+    console.log("Playlist", $playlist);
 
     let downloadDirPath;
     onMount(async () => (downloadDirPath = await downloadDir()));
 
-    let selected: boolean[] = $playlist?.entries.map((item) => false);
+    let selected: boolean[] = $playlist?.songs.map((item) => false);
     $: if ($playlist) {
         initSelected();
     }
 
     const initSelected = () => {
-        selected = $playlist?.entries.map((item) => false);
+        selected = $playlist?.songs.map((item) => false);
     };
 
     const selectAll = () => {
-        selected = $playlist?.entries.map((item) => true);
+        selected = $playlist?.songs.map((item) => true);
     };
 
-    const download = async (item: PlaylistEntry): Promise<string> =>
+    const download = async (item: dbSong): Promise<string> =>
         invoke("download_song", {
             url: item.url,
             downloadPath: downloadDirPath,
         });
 
     const downloadSelected = () => {
-        const selectedItems = $playlist?.entries.filter(
-            (item, i) => selected[i]
-        );
+        const selectedItems = $playlist?.songs.filter((item, i) => selected[i]);
         mapWithConcurrency(selectedItems, download).then((results) => {
             console.log(results);
         });
@@ -50,7 +49,7 @@
         <button on:click={selectAll}>Select All</button>
     </div>
     <div class="list">
-        {#each $playlist.entries as item, i}
+        {#each $playlist.songs as item, i}
             <PlaylistItem {item} bind:selected={selected[i]} />
         {/each}
     </div>

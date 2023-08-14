@@ -17,6 +17,7 @@ pub struct DbSong {
     pub album: Option<String>,
     pub audio_source_url: Option<String>,
     pub channel: Option<String>,
+    pub duration: f32,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -35,6 +36,13 @@ pub struct DbPlaylistSong {
     pub id: i32,
     pub playlist_id: i32,
     pub song_id: i32,
+}
+
+#[derive(Serialize, Deserialize)]
+
+pub struct DbPlaylistFull {
+    pub playlist: DbPlaylist,
+    pub songs: Vec<DbSong>,
 }
 
 pub struct AppState {
@@ -69,7 +77,8 @@ pub fn init_db(handle: &AppHandle) -> Result<Connection> {
             artist TEXT,
             album TEXT,
             audio_source_url TEXT,
-            channel TEXT NOT NULL
+            channel TEXT NOT NULL,
+            duration FLOAT
         )",
         [],
     )?;
@@ -126,6 +135,7 @@ pub fn get_song(conn: &Connection, path: &str) -> Result<DbSong> {
             album: row.get(7)?,
             audio_source_url: row.get(8)?,
             channel: row.get(9)?,
+            duration: row.get(10)?,
         })
     });
 }
@@ -150,18 +160,45 @@ pub fn get_playlists(conn: &Connection) -> Result<Vec<DbPlaylist>, CommandError>
     Ok(result)
 }
 
-pub fn get_playlist_songs(conn: &Connection) -> Result<Vec<DbPlaylistSong>> {
-    let mut stmt = conn.prepare("SELECT * FROM playlist_songs WHERE playlist_id=?1")?;
-
-    let rows = stmt.query_map([], |row| {
-        Ok(DbPlaylistSong {
+pub fn get_playlist(conn: &Connection, id: &str) -> Result<DbPlaylistFull, CommandError> {
+    let mut stmt = conn.prepare("SELECT * FROM playlists WHERE id=?1")?;
+    let playlist = stmt.query_row([id], |row| {
+        Ok(DbPlaylist {
             id: row.get(0)?,
-            playlist_id: row.get(1)?,
-            song_id: row.get(2)?,
+            title: row.get(1)?,
+            description: row.get(2)?,
+            url: row.get(3)?,
+            thumbnail: row.get(4)?,
+            path: row.get(5)?,
+            downloaded: row.get(6)?,
         })
     })?;
 
-    let result = rows.into_iter().collect::<Result<Vec<_>, _>>()?;
+    let mut stmt = conn.prepare(
+        "SELECT songs.* FROM songs
+        INNER JOIN playlist_songs ON (songs.id = playlist_songs.song_id)
+        WHERE playlist_songs.playlist_id = ?1;",
+    )?;
+
+    let rows = stmt.query_map([id], |row| {
+        Ok(DbSong {
+            id: row.get(0)?,
+            title: row.get(1)?,
+            url: row.get(2)?,
+            thumbnail: row.get(3)?,
+            path: row.get(4)?,
+            downloaded: row.get(5)?,
+            artist: row.get(6)?,
+            album: row.get(7)?,
+            audio_source_url: row.get(8)?,
+            channel: row.get(9)?,
+            duration: row.get(10)?,
+        })
+    })?;
+
+    let songs = rows.into_iter().collect::<Result<Vec<_>, _>>()?;
+
+    let result = DbPlaylistFull { playlist, songs };
 
     Ok(result)
 }

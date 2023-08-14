@@ -7,7 +7,7 @@ type Thumbnail = {
     width: number;
 };
 
-export type PlaylistEntry = {
+type PlaylistEntry = {
     availability: string | null;
     channel: string;
     channel_id: string;
@@ -25,7 +25,7 @@ export type PlaylistEntry = {
     _type: string;
 };
 
-export type PlaylistInfo = {
+type PlaylistInfo = {
     availability: string | null;
     channel: string;
     channel_id: string;
@@ -58,54 +58,40 @@ export type PlaylistInfo = {
     };
 };
 
-type dbPlaylistEntry = {
-    id?: number;
+export type dbSong = {
+    id: string;
     title: string;
     url: string;
-    thumbnail: string;
+    thumbnail?: string;
     path?: string;
     downloaded: boolean;
     artist?: string;
     album?: string;
-    audioSourceUrl?: string;
-    uploader: string;
+    audio_source_url?: string;
+    channel: string;
+    duration: number;
 };
 
 
-type dbPlaylist = {
-    id?: number;
+export type dbPlaylist = {
+    id: string;
     title: string;
     description: string;
     url: string;
-    thumbnail: string;
+    thumbnail?: string;
     path?: string;
     downloaded: boolean;
 }
 
-function trimPlaylist(playlist: PlaylistInfo): [dbPlaylist, dbPlaylistEntry[]] {
-    const { entries, ...rest } = playlist;
-
-    const trimmedPlaylist = {
-        title: rest.title,
-        description: rest.description,
-        url: rest.webpage_url,
-        thumbnail: rest.thumbnails[0].url,
-        downloaded: false
-    }
-    const trimmedEntries = entries.map(entry => ({
-        title: entry.title,
-        url: entry.url,
-        thumbnail: entry.thumbnails[0].url,
-        downloaded: false,
-        uploader: entry.channel,
-    }))
-
-    return [trimmedPlaylist, trimmedEntries];
+export type dbPlaylistFull = {
+    playlist: dbPlaylist;
+    songs: dbSong[];
 }
 
-async function savePlaylist(playlist: PlaylistInfo) {
-    const [playlistInfo, songs] = trimPlaylist(playlist);
-    const result = await invoke("savePlaylist", { playlistInfo, songs });
+
+async function savePlaylist(playlist: dbPlaylistFull) {
+    // TODO: error handling
+    const result = await invoke("savePlaylist", playlist);
 }
 
 export async function addPlaylist(url: string) {
@@ -120,6 +106,31 @@ export async function loadPlaylists() {
     return playlists;
 }
 
-export const playlist = writable<PlaylistInfo>();
+export async function loadPlaylist(id: string) {
+    const data = await invoke<dbPlaylistFull>("load_playlist", { id });
+    console.log(data);
+    return data;
+}
+
+export async function deletePlaylist(id: string) {
+    // TODO
+}
+
+export async function selectPlaylist(id: string) {
+    playlist.set(await loadPlaylist(id));
+}
+
+const URL_FORMAT = "https://www.youtube.com/playlist?list=";
+export async function getYTPlaylist(url: string) {
+    // TODO: error handling
+    if (!url.startsWith(URL_FORMAT)) {
+        // Error
+        return;
+    }
+    playlist.set(await invoke<dbPlaylistFull>("get_playlist_info", { url }));
+    return true;
+}
+
+export const playlist = writable<dbPlaylistFull>();
 
 export const playlistLibrary = writable<dbPlaylist[]>([]);

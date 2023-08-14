@@ -1,6 +1,12 @@
-<script>
+<script lang="ts">
     import { onMount } from "svelte";
-    import { loadPlaylists, playlistLibrary } from "../store/playlist";
+    import {
+        loadPlaylists,
+        playlistLibrary,
+        playlist,
+        selectPlaylist,
+        type dbPlaylist,
+    } from "../store/playlist";
     import AddPlaylist from "./AddPlaylist.svelte";
 
     onMount(() => {
@@ -15,8 +21,8 @@
     const closeModal = () => {
         adding = false;
     };
-    const selectPlaylist = (playlist) => {
-        console.log(playlist);
+    const choosePlaylist = (selectedPlaylist: dbPlaylist) => {
+        selectPlaylist(selectedPlaylist.id);
     };
     const loadList = () => {
         loadPlaylists();
@@ -36,7 +42,7 @@
         />
     {/if}
     {#each $playlistLibrary as playlist}
-        <div class="card playlist" on:click={() => selectPlaylist(playlist)}>
+        <div class="card playlist" on:click={() => choosePlaylist(playlist)}>
             <img src={playlist.thumbnail} alt={playlist.title} />
             <div class="playlist-title">{playlist.title}</div>
             <div class="playlist-description">{playlist.description}</div>

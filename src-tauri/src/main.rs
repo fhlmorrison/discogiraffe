@@ -48,14 +48,21 @@ async fn download_song(url: &str, download_path: &str) -> Result<String, Command
 }
 
 #[tauri::command]
-async fn get_playlist_info(url: &str) -> Result<String, CommandError> {
-    let data = ytdl::get_playlist_info(url)?;
-    return Ok(data);
+async fn get_playlist_info(url: &str) -> Result<database::DbPlaylistFull, CommandError> {
+    return ytdl::get_playlist_info(url);
 }
 
 #[tauri::command]
 async fn add_playlist(handle: AppHandle, url: &str) -> Result<(), CommandError> {
     return handle.db(|conn| ytdl::add_to_db(conn, url));
+}
+
+#[tauri::command]
+async fn load_playlist(
+    handle: AppHandle,
+    id: &str,
+) -> Result<database::DbPlaylistFull, CommandError> {
+    return handle.db(|conn| database::get_playlist(conn, id));
 }
 
 #[tauri::command]
@@ -96,7 +103,8 @@ fn main() {
             write_metadata,
             get_cover_art,
             add_playlist,
-            load_playlists
+            load_playlists,
+            load_playlist
         ])
         .setup(|app| {
             let handle = app.handle();
