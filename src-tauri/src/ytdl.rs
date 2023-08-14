@@ -38,7 +38,7 @@ pub struct YTSong {
     pub url: String,
     pub thumbnails: Vec<YTThumbnail>,
     pub channel: Option<String>,
-    pub duration: f32,
+    pub duration: Option<f32>,
 }
 
 #[derive(Serialize, Deserialize)]

@@ -17,7 +17,7 @@ pub struct DbSong {
     pub album: Option<String>,
     pub audio_source_url: Option<String>,
     pub channel: Option<String>,
-    pub duration: f32,
+    pub duration: Option<f32>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -77,7 +77,7 @@ pub fn init_db(handle: &AppHandle) -> Result<Connection> {
             artist TEXT,
             album TEXT,
             audio_source_url TEXT,
-            channel TEXT NOT NULL,
+            channel TEXT,
             duration FLOAT
         )",
         [],
