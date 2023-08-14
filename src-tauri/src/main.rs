@@ -54,7 +54,8 @@ async fn get_playlist_info(url: &str) -> Result<database::DbPlaylistFull, Comman
 
 #[tauri::command]
 async fn add_playlist(handle: AppHandle, url: &str) -> Result<(), CommandError> {
-    return handle.db(|conn| ytdl::add_to_db(conn, url));
+    let playlist = ytdl::get_playlist_info(url)?;
+    return handle.db(|conn| database::add_playlist(conn, playlist));
 }
 
 #[tauri::command]

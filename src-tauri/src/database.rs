@@ -1,4 +1,4 @@
-use rusqlite::{Connection, Result};
+use rusqlite::{params, Connection, Result};
 use tauri::AppHandle;
 
 use crate::songs::{MetadataKey, WriteMetadataEvent};
@@ -203,7 +203,59 @@ pub fn get_playlist(conn: &Connection, id: &str) -> Result<DbPlaylistFull, Comma
     Ok(result)
 }
 
-pub fn add_playlist(conn: &Connection, playlist: DbPlaylist, songs: Vec<DbSong>) -> Result<()> {
+pub fn add_playlist(conn: &Connection, playlist: DbPlaylistFull) -> Result<(), CommandError> {
+    let DbPlaylistFull { playlist, songs } = playlist;
+
+    let tx = conn.unchecked_transaction()?;
+
+    tx.execute(
+        "INSERT INTO playlists (id, title, description, url, thumbnail, path, downloaded) 
+        VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7) ON CONFLICT(id) DO UPDATE 
+        SET title = ?2, description = ?3, url = ?4, thumbnail = ?5, path = ?6, downloaded = ?7",
+        params![
+            playlist.id,
+            playlist.title,
+            playlist.description,
+            playlist.url,
+            playlist.thumbnail,
+            playlist.path,
+            playlist.downloaded
+        ],
+    )?;
+
+    // TODO: replace unwraps
+
+    songs.iter().for_each(|song| {
+        tx.execute(
+            "INSERT INTO songs 
+            (id, title, url, thumbnail, path, downloaded, artist, album, audio_source_url, channel, duration) 
+            VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)
+            ON CONFLICT DO NOTHING
+            ",
+            params![
+                song.id,
+                song.title,
+                song.url,
+                song.thumbnail,
+                song.path,
+                song.downloaded,
+                song.artist,
+                song.album,
+                song.audio_source_url,
+                song.channel,
+                song.duration
+            ],
+        )
+        .unwrap();
+        tx.execute(
+            "INSERT INTO playlist_songs (playlist_id, song_id) VALUES (?1, ?2) ON CONFLICT DO NOTHING",
+            params![playlist.id.to_owned(), song.id.to_owned()],
+        )
+        .unwrap();
+    });
+
+    tx.commit()?;
+
     Ok(())
 }
 
