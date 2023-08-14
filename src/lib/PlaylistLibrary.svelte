@@ -1,16 +1,11 @@
 <script>
+    import { onMount } from "svelte";
     import { loadPlaylists, playlistLibrary } from "../store/playlist";
     import AddPlaylist from "./AddPlaylist.svelte";
 
-    playlistLibrary.set([
-        {
-            title: "Test Playlist",
-            description: "This is a test playlist",
-            thumbnail: "https://i.ytimg.com/vi/5qap5aO4i9A/hqdefault.jpg",
-            url: "",
-            downloaded: false,
-        },
-    ]);
+    onMount(() => {
+        loadList();
+    });
 
     let adding = false;
 
