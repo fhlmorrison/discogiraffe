@@ -8,6 +8,9 @@
         type dbPlaylist,
     } from "../store/playlist";
     import AddPlaylist from "./AddPlaylist.svelte";
+    import { createEventDispatcher } from "svelte";
+
+    const dispatch = createEventDispatcher();
 
     onMount(() => {
         loadList();
@@ -23,6 +26,8 @@
     };
     const choosePlaylist = (selectedPlaylist: dbPlaylist) => {
         selectPlaylist(selectedPlaylist.id);
+        // Open playlist list view
+        dispatch("tab-select", { tab: "/playlist" });
     };
     const loadList = () => {
         loadPlaylists();

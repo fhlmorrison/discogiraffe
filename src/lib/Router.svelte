@@ -35,6 +35,11 @@
     ];
 
     let currentRoute: Route = routes[0];
+    const selectTab = (event) => {
+        currentRoute = routes.find(
+            (route) => route.path === event?.detail?.tab
+        );
+    };
 </script>
 
 <div>
@@ -48,7 +53,10 @@
     <!-- <SongReader /> -->
 </div>
 <div>
-    <svelte:component this={currentRoute?.component} />
+    <svelte:component
+        this={currentRoute?.component}
+        on:tab-select={selectTab}
+    />
 </div>
 
 <style>
