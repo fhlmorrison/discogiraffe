@@ -4,7 +4,7 @@
 
 # DiscoGiraffe
 
-### A simple music player for your local music library.
+## A music library manager for YouTube downloads.
 
 ### Requirements
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp)
