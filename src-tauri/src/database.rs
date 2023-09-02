@@ -287,3 +287,8 @@ pub fn update_metadata(conn: &Connection, event: &WriteMetadataEvent) -> Result<
 
     Ok(())
 }
+
+pub fn set_downloaded(conn: &Connection, url: &str) -> Result<()> {
+    conn.execute("UPDATE songs SET downloaded = true WHERE url = ?1", [url])?;
+    Ok(())
+}

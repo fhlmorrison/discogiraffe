@@ -21,30 +21,29 @@ fn greet(name: &str) -> String {
 }
 
 #[tauri::command]
-async fn download_song(url: &str, download_path: &str) -> Result<String, CommandError> {
-    let args = vec![
-        Arg::new("-icwx"),
-        Arg::new_with_arg("-f", "bestaudio/best"),
-        Arg::new_with_arg("-o", "%(title)s-%(id)s.%(ext)s"),
-        Arg::new_with_arg("--audio-format", "mp3"),
-        Arg::new_with_arg("--audio-quality", "0"),
-        Arg::new("--embed-thumbnail"),
-    ];
-    let path = PathBuf::from(download_path);
+async fn download_song(
+    handle: AppHandle,
+    url: &str,
+    download_path: &str,
+) -> Result<String, CommandError> {
+    // return ytdl::download_song(url, download_path);
 
-    print!("yt-dlp");
-    args.iter().for_each(|arg| print!(" {}", arg.to_string()));
-    print!(" {}\n", url);
-
-    let ytd = YoutubeDL::new(&path, args, url)?;
-
-    println!("Downloading song from {} to {}", url, path.display());
-    let download = ytd.download()?;
-
-    let filename = parse_filename(download.output());
-    let filepath = path.join(filename);
-    println!("Downloaded song to {}", filepath.display());
-    return Ok(filepath.display().to_string());
+    match ytdl::download_song(url, download_path) {
+        Ok(path) => {
+            match handle.db(|db| database::set_downloaded(db, &url)) {
+                Ok(()) => {
+                    print!("{}", "set as downloaded")
+                }
+                Err(e) => {
+                    print!("{}", e)
+                }
+            };
+            return Ok(path);
+        }
+        Err(e) => {
+            return Err(e);
+        }
+    }
 }
 
 #[tauri::command]

@@ -8,6 +8,8 @@
     const fmtMSS = (s: number) => {
         return (s - (s %= 60)) / 60 + (9 < s ? ":" : ":0") + s;
     };
+
+    // if downloaded, do not bind
 </script>
 
 <div class="item">
@@ -27,7 +29,11 @@
         </div>
     </div>
     <div class="selector">
-        <input class="checkbox" type="checkbox" bind:checked={selected} />
+        {#if item.downloaded}
+            <input class="checkbox" type="checkbox" checked disabled />
+        {:else}
+            <input class="checkbox" type="checkbox" bind:checked={selected} />
+        {/if}
     </div>
 </div>
 
@@ -115,5 +121,9 @@
         width: 1.5em;
         height: 1.5em;
         border-radius: 0.5em;
+    }
+
+    .checkbox[disabled] {
+        filter: invert(25%);
     }
 </style>

@@ -1,5 +1,5 @@
 use crate::database::{DbPlaylist, DbPlaylistFull, DbSong};
-use crate::utils::CommandError;
+use crate::utils::{parse_filename, CommandError};
 use rusqlite::{params, Connection};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -98,6 +98,33 @@ pub fn get_playlist_info(url: &str) -> Result<DbPlaylistFull, CommandError> {
     let result = DbPlaylistFull { playlist, songs };
 
     Ok(result)
+}
+
+pub fn download_song(url: &str, download_path: &str) -> Result<String, CommandError> {
+    let args = vec![
+        Arg::new("-icwx"),
+        Arg::new_with_arg("-f", "bestaudio/best"),
+        Arg::new_with_arg("-o", "%(title)s-%(id)s.%(ext)s"),
+        Arg::new_with_arg("--audio-format", "mp3"),
+        Arg::new_with_arg("--audio-quality", "0"),
+        Arg::new("--embed-thumbnail"),
+    ];
+    let path = PathBuf::from(download_path);
+
+    // print!("yt-dlp");
+    // args.iter().for_each(|arg| print!(" {}", arg.to_string()));
+    // print!(" {}\n", url);
+
+    let ytd = YoutubeDL::new(&path, args, url)?;
+
+    println!("Downloading song from {} to {}", url, path.display());
+    let download = ytd.download()?;
+
+    let filename = parse_filename(download.output());
+    let filepath = path.join(filename);
+    println!("Downloaded song to {}", filepath.display());
+
+    return Ok(filepath.display().to_string());
 }
 
 mod tests {
