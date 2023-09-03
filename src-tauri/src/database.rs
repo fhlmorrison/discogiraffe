@@ -282,6 +282,15 @@ pub fn update_metadata(conn: &Connection, event: &WriteMetadataEvent) -> Result<
                 "UPDATE songs SET (audio_source_url) VALUES (?1) where path = ?2",
                 [entry.value.as_str().unwrap_or_default(), path],
             ),
+            MetadataKey::FileName => {
+                let new_name = entry.value.as_str().unwrap_or_default();
+                let folder = std::path::Path::new(path).parent().unwrap();
+                let new_path = folder.join(new_name);
+                conn.execute(
+                    "UPDATE songs SET (path) VALUES (?1) where path = ?2",
+                    [new_path.to_str().unwrap_or_default(), path],
+                )
+            }
         };
     }
 
