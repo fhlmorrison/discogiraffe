@@ -32,8 +32,8 @@ async fn download_song(
 
     match ytdl::download_song(url, download_path) {
         Ok(path) => {
-            match handle.db(|db| database::set_downloaded(db, &url)) {
-                Ok(()) => {
+            match handle.db(|db| database::add_local_song(db, &path, &url)) {
+                Ok(_) => {
                     print!("{}", "set as downloaded")
                 }
                 Err(e) => {
