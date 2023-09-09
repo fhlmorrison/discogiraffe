@@ -2,19 +2,19 @@ use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum CommandError {
-    #[error(transparent)]
+    #[error("std::IO error: {0}")]
     Io(#[from] std::io::Error),
 
-    #[error(transparent)]
+    #[error("YoutubeDL error: {0}")]
     YoutubeDL(#[from] ytd_rs::error::YoutubeDLError),
 
-    #[error(transparent)]
+    #[error("Id3 error: {0}")]
     Id3(#[from] id3::Error),
 
-    #[error(transparent)]
+    #[error("Rusqlite error: {0}")]
     Rusqlite(#[from] rusqlite::Error),
 
-    #[error(transparent)]
+    #[error("SerdeJson error: {0}")]
     SerdeJson(#[from] serde_json::Error),
 }
 
@@ -41,6 +41,7 @@ impl serde::Serialize for CommandError {
 }
 
 pub fn parse_filename(input: &str) -> String {
+    println!("Parsing filename: {}", input);
     return input
         .trim_end()
         .trim_end_matches("\"")
