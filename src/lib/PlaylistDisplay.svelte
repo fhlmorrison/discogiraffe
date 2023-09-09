@@ -1,88 +1,88 @@
 <script lang="ts">
-    import type { dbSong } from "../store/playlist";
-    import PlaylistItem from "./PlaylistItem.svelte";
-    import { invoke } from "@tauri-apps/api/tauri";
-    import { playlist } from "../store/playlist";
-    import { mapWithConcurrency } from "./concurrentMap.js";
-    import { downloadDir } from "@tauri-apps/api/path";
-    import { onMount } from "svelte/internal";
+  import type { dbSong } from "../store/playlist";
+  import PlaylistItem from "./PlaylistItem.svelte";
+  import { invoke } from "@tauri-apps/api/tauri";
+  import { playlist } from "../store/playlist";
+  import { mapWithConcurrency } from "./concurrentMap.js";
+  import { downloadDir } from "@tauri-apps/api/path";
+  import { onMount } from "svelte/internal";
 
-    //TODO: Add shift click multi select
-    console.log("Playlist", $playlist);
+  //TODO: Add shift click multi select
+  console.log("Playlist", $playlist);
 
-    let downloadDirPath;
-    onMount(async () => (downloadDirPath = await downloadDir()));
+  let downloadDirPath;
+  onMount(async () => (downloadDirPath = await downloadDir()));
 
-    let selected: boolean[] = $playlist?.songs.map((item) => false);
-    $: if ($playlist) {
-        initSelected();
-    }
+  let selected: boolean[] = $playlist?.songs.map((item) => false);
+  $: if ($playlist) {
+    initSelected();
+  }
 
-    const initSelected = () => {
-        selected = $playlist?.songs.map((item) => false);
-    };
+  const initSelected = () => {
+    selected = $playlist?.songs.map((item) => false);
+  };
 
-    const selectAll = () => {
-        selected = $playlist?.songs.map((item) => true);
-    };
+  const selectAll = () => {
+    selected = $playlist?.songs.map((item) => !item.downloaded);
+  };
 
-    const download = async (item: dbSong): Promise<string> =>
-        invoke("download_song", {
-            url: item.url,
-            downloadPath: downloadDirPath,
-        });
+  const download = async (item: dbSong): Promise<string> =>
+    invoke("download_song", {
+      url: item.url,
+      downloadPath: downloadDirPath,
+    });
 
-    const downloadSelected = () => {
-        const selectedItems = $playlist?.songs.filter((item, i) => selected[i]);
-        mapWithConcurrency(selectedItems, download).then((results) => {
-            console.log(results);
-        });
-    };
+  const downloadSelected = () => {
+    const selectedItems = $playlist?.songs.filter((item, i) => selected[i]);
+    mapWithConcurrency(selectedItems, download).then((results) => {
+      console.log(results);
+    });
+  };
 </script>
 
 {#if $playlist}
-    <div class="button-row">
-        <button class="download" on:click={downloadSelected}
-            >Download Selected</button
-        >
-        <button on:click={initSelected}>Deselect All</button>
-        <button on:click={selectAll}>Select All</button>
-    </div>
-    <div class="list">
-        {#each $playlist.songs as item, i}
-            <PlaylistItem {item} bind:selected={selected[i]} />
-        {/each}
-    </div>
+  <div class="button-row">
+    <button class="download" on:click={downloadSelected}
+      >Download Selected</button
+    >
+    <button on:click={initSelected}>Deselect All</button>
+    <button on:click={selectAll}>Select All</button>
+  </div>
+  <div class="list">
+    {#each $playlist.songs as item, i}
+      <PlaylistItem {item} bind:selected={selected[i]} />
+    {/each}
+  </div>
 {:else}
-    <p>No playlist loaded</p>
+  <p>No playlist loaded</p>
 {/if}
 
 <style>
-    .button-row {
-        display: flex;
-        flex-direction: row;
-        justify-content: right;
-        align-items: center;
-        margin: 10px 0;
-        gap: 10px;
-    }
+  .button-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    align-items: center;
+    margin: 10px 0;
+    gap: 10px;
+  }
 
-    .download {
-        background-color: #4caf50;
-        border: none;
-        color: white;
-        padding: 10px 20px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        margin-right: auto;
-    }
+  .download {
+    background-color: #4caf50;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-right: auto;
+  }
 
-    .list {
-        display: flex;
-        flex-direction: column;
-        justify-content: left;
-        align-items: center;
-    }
+  .list {
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    align-items: center;
+  }
 </style>

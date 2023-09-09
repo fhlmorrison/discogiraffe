@@ -259,6 +259,13 @@ pub fn add_playlist(conn: &Connection, playlist: DbPlaylistFull) -> Result<(), C
     Ok(())
 }
 
+pub fn add_local_song(conn: &Connection, path: &str, url: &str) -> Result<usize> {
+    return conn.execute(
+        "UPDATE songs SET path=?1, downloaded=1 WHERE url=?2",
+        params![path, url],
+    );
+}
+
 pub fn update_metadata(conn: &Connection, event: &WriteMetadataEvent) -> Result<()> {
     // Add metadata to song
 

@@ -8,6 +8,8 @@ mod ytdl;
 
 use crate::utils::CommandError;
 
+use rusqlite::Connection;
+use songs::WriteMetadataEvent;
 use tauri::{AppHandle, Manager};
 
 use std::path::PathBuf;
@@ -44,6 +46,44 @@ async fn download_song(
             return Err(e);
         }
     }
+}
+
+#[tauri::command]
+async fn save_folder(app: tauri::AppHandle, files: Vec<&str>) -> Result<(), CommandError> {
+    // TODO: needs to be improved so errors bubble up
+    println!("Checking {} files against database", files.len());
+    files
+        .iter()
+        .map(|&file| {
+            return save_local_song(&app, file);
+        })
+        .collect::<Result<_, CommandError>>()?;
+    println!("Finished saving files to database");
+    Ok(())
+}
+
+fn save_local_song(app: &tauri::AppHandle, file: &str) -> Result<(), CommandError> {
+    let metadata = songs::read_metadata(file);
+    if let Some(Some(url)) = metadata
+        .iter()
+        .find(|x| matches!(x.key, songs::MetadataKey::AudioSourceUrl))
+        .map(|x| x.value.as_str())
+    {
+        println!("Saving {} to database", file);
+        app.db(|conn| database::add_local_song(conn, file, url))?;
+        app.db(|conn| {
+            database::update_metadata(
+                conn,
+                &WriteMetadataEvent {
+                    src: file.to_string(),
+                    metadata: metadata,
+                },
+            )
+        })?;
+    } else {
+        println!("No audio source url found for {}", file);
+    };
+    Ok(())
 }
 
 #[tauri::command]
@@ -104,7 +144,8 @@ fn main() {
             get_cover_art,
             add_playlist,
             load_playlists,
-            load_playlist
+            load_playlist,
+            save_folder
         ])
         .setup(|app| {
             let handle = app.handle();

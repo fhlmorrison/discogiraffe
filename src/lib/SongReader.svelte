@@ -1,60 +1,61 @@
 <script lang="ts">
-    import SongListItem from "./SongListItem.svelte";
-    import MetaDataViewer from "./MetaDataViewer.svelte";
-    import { loadSongsFromFolder } from "./loadAssets";
-    import type { OpenFileEntry } from "src/store/files";
-    import { openFiles } from "../store/files";
+  import SongListItem from "./SongListItem.svelte";
+  import MetaDataViewer from "./MetaDataViewer.svelte";
+  import { loadSongsFromFolder } from "./loadAssets";
+  import { selectedIndex, openFiles } from "../store/files";
 
-    // let openFiles: OpenFileEntry[];
+  // let openFiles: OpenFileEntry[];
 
-    const openFolder = () =>
-        loadSongsFromFolder().then((res) => {
-            console.log(res);
-            $openFiles = res;
-        });
+  const openFolder = () =>
+    loadSongsFromFolder().then((res) => {
+      console.log(res);
+      $openFiles = res;
+    });
 
-    let selected: OpenFileEntry;
-    let selectedIndex = 0;
+  const saveSongs = () => {
+    openFiles.save();
+  };
 
-    const selectSong = (index: number) => {
-        selectedIndex = index;
-    };
+  $: selectedFile = $openFiles[$selectedIndex];
 
-    $: $openFiles && $openFiles.length > 0 && (selectedIndex = 0);
-    $: selected = $openFiles[selectedIndex];
+  const selectSong = (index: number) => {
+    openFiles.select(index);
+  };
 </script>
 
 <div class="col">
-    <div class="row">
-        <button on:click={openFolder}>Open Folder</button>
+  <div class="row">
+    <div>
+      <button on:click={openFolder}>Open Folder</button>
+      {#if $openFiles && $openFiles.length > 0}
+        <button on:click={saveSongs}>Save songs to db</button>
+      {/if}
     </div>
+  </div>
 
-    <MetaDataViewer
-        song={selected}
-        on:next={() => {
-            console.log("next received");
-            selectedIndex = (selectedIndex + 1) % $openFiles.length;
-        }}
-        on:prev={() => {
-            console.log("prev received");
-            selectedIndex =
-                (selectedIndex - 1 + $openFiles.length) % $openFiles.length;
-        }}
-    />
+  <MetaDataViewer
+    song={selectedFile}
+    on:next={() => {
+      openFiles.next();
+    }}
+    on:prev={() => {
+      openFiles.prev();
+    }}
+  />
 
-    {#if openFiles}
-        <div class="row">
-            <ul>
-                {#each $openFiles as file, i}
-                    <SongListItem
-                        song={file}
-                        index={i}
-                        on:select={(e) => selectSong(e.detail)}
-                    />
-                {/each}
-            </ul>
-        </div>
-    {/if}
+  {#if openFiles}
+    <div class="row">
+      <ul>
+        {#each $openFiles as file, i}
+          <SongListItem
+            song={file}
+            index={i}
+            on:select={(e) => selectSong(e.detail)}
+          />
+        {/each}
+      </ul>
+    </div>
+  {/if}
 </div>
 
 <style>
