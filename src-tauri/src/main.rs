@@ -37,18 +37,17 @@ async fn download_song(
         Ok(path) => {
             match handle.db(|db| database::add_local_song(db, &path, &url)) {
                 Ok(_) => {
-                    handle.db(|db| {
-                        database::update_metadata(
-                            db,
-                            &WriteMetadataEvent {
-                                src: path.clone(),
-                                metadata: vec![MetadataEntry {
-                                    key: MetadataKey::AudioSourceUrl,
-                                    value: serde_json::Value::String(url.to_string()),
-                                }],
-                            },
-                        )
-                    })?;
+                    std::thread::sleep(std::time::Duration::from_millis(1000));
+                    write_metadata(
+                        handle,
+                        WriteMetadataEvent {
+                            src: path.clone(),
+                            metadata: vec![MetadataEntry {
+                                key: MetadataKey::AudioSourceUrl,
+                                value: serde_json::Value::String(url.to_string()),
+                            }],
+                        },
+                    )?;
                     println!("{}", "set as downloaded")
                 }
                 Err(e) => {
