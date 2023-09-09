@@ -39,3 +39,13 @@ impl serde::Serialize for CommandError {
         serializer.serialize_str(self.to_string().as_ref())
     }
 }
+
+pub fn parse_filename(input: &str) -> String {
+    return input
+        .trim_end()
+        .trim_end_matches("\"")
+        .split("\"")
+        .last()
+        .unwrap()
+        .to_string();
+}

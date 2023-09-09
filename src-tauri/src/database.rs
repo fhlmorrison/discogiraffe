@@ -274,23 +274,37 @@ pub fn update_metadata(conn: &Connection, event: &WriteMetadataEvent) -> Result<
     for entry in event.metadata.iter() {
         let _ = match entry.key {
             MetadataKey::Title => conn.execute(
-                "INSERT INTO songs (path, title) VALUES (?2, ?1) ON CONFLICT(path) UPDATE songs SET (title) VALUES (?1)",
+                "songs SET (title) VALUES (?1) where path = ?2",
                 [entry.value.as_str().unwrap_or_default(), path],
             ),
             MetadataKey::Artist => conn.execute(
-                "INSERT INTO songs (path, artist) VALUES (?2, ?1) ON CONFLICT(path) DO UPDATE songs SET (artist) VALUES (?1)",
+                "UPDATE songs SET (artist) VALUES (?1) where path = ?2",
                 [entry.value.as_str().unwrap_or_default(), path],
             ),
             MetadataKey::Album => conn.execute(
-                "INSERT INTO songs (path, album) VALUES (?2, ?1) ON CONFLICT(path) DO UPDATE songs SET (album) VALUES (?1)",
+                "UPDATE songs SET (album) VALUES (?1) where path = ?2",
                 [entry.value.as_str().unwrap_or_default(), path],
             ),
             MetadataKey::AudioSourceUrl => conn.execute(
-                "INSERT INTO songs (path, audio_source_url) VALUES (?2, ?1) ON CONFLICT(path) DO UPDATE songs SET (audio_source_url) VALUES (?1)",
+                "UPDATE songs SET (audio_source_url) VALUES (?1) where path = ?2",
                 [entry.value.as_str().unwrap_or_default(), path],
             ),
+            MetadataKey::FileName => {
+                let new_name = entry.value.as_str().unwrap_or_default();
+                let folder = std::path::Path::new(path).parent().unwrap();
+                let new_path = folder.join(new_name);
+                conn.execute(
+                    "UPDATE songs SET (path) VALUES (?1) where path = ?2",
+                    [new_path.to_str().unwrap_or_default(), path],
+                )
+            }
         };
     }
 
+    Ok(())
+}
+
+pub fn set_downloaded(conn: &Connection, url: &str) -> Result<()> {
+    conn.execute("UPDATE songs SET downloaded = true WHERE url = ?1", [url])?;
     Ok(())
 }

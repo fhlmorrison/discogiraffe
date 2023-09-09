@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use base64::{engine::general_purpose, Engine as _};
 use id3::{Tag, TagLike};
@@ -13,6 +13,7 @@ pub enum MetadataKey {
     Artist,
     Album,
     AudioSourceUrl,
+    FileName,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -92,6 +93,11 @@ pub fn write_metadata(event: WriteMetadataEvent) -> Result<(), CommandError> {
             MetadataKey::AudioSourceUrl => {
                 let audio_source_url = entry.value.to_string();
                 tag.add_frame(id3::Frame::link("WAS", audio_source_url));
+            }
+            MetadataKey::FileName => {
+                let new_name = entry.value.as_str().unwrap();
+                let old_name = path.file_name().unwrap();
+                std::fs::rename(&old_name, &new_name)?;
             }
         }
     }
