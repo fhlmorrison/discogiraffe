@@ -2,8 +2,7 @@
   import SongListItem from "./SongListItem.svelte";
   import MetaDataViewer from "./MetaDataViewer.svelte";
   import { loadSongsFromFolder } from "./loadAssets";
-  import type { OpenFileEntry } from "src/store/files";
-  import { openFiles } from "../store/files";
+  import { selectedIndex, openFiles } from "../store/files";
 
   // let openFiles: OpenFileEntry[];
 
@@ -17,15 +16,11 @@
     openFiles.save();
   };
 
-  let selected: OpenFileEntry;
-  let selectedIndex = 0;
+  $: selectedFile = $openFiles[$selectedIndex];
 
   const selectSong = (index: number) => {
-    selectedIndex = index;
+    openFiles.select(index);
   };
-
-  $: $openFiles && $openFiles.length > 0 && (selectedIndex = 0);
-  $: selected = $openFiles[selectedIndex];
 </script>
 
 <div class="col">
@@ -39,15 +34,12 @@
   </div>
 
   <MetaDataViewer
-    song={selected}
+    song={selectedFile}
     on:next={() => {
-      console.log("next received");
-      selectedIndex = (selectedIndex + 1) % $openFiles.length;
+      openFiles.next();
     }}
     on:prev={() => {
-      console.log("prev received");
-      selectedIndex =
-        (selectedIndex - 1 + $openFiles.length) % $openFiles.length;
+      openFiles.prev();
     }}
   />
 
