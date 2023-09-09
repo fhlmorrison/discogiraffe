@@ -15,7 +15,7 @@
   const setDownloadDir = async (option) =>
     (downloadDirPath = option || (await downloadDir()));
 
-  $: setDownloadDir($settings?.downloadDir);
+  $: setDownloadDir($settings?.downloadPath);
 
   let selected: boolean[] = $playlist?.songs.map((item) => false);
   $: if ($playlist) {
