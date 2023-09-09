@@ -1,13 +1,10 @@
 <script lang="ts">
-  import { settings } from "./store/settings";
-  import FaCog from "svelte-icons/fa/FaCog.svelte";
   import Router from "./lib/Router.svelte";
+  import Settings from "./lib/Settings.svelte";
 </script>
 
 <header>
-  <button class="settings">
-    <FaCog />
-  </button>
+  <Settings />
 </header>
 
 <main class="container">
@@ -29,14 +26,6 @@
 <style>
   .playlist-section {
     width: clamp(400px, 100%, 800px);
-  }
-
-  .settings {
-    width: 64px;
-    cursor: pointer;
-    float: left;
-    justify-self: left;
-    padding: 5px;
   }
 
   header {

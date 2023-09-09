@@ -1,17 +1,21 @@
 <script lang="ts">
+  import { settings } from "./../store/settings";
   import type { dbSong } from "../store/playlist";
   import PlaylistItem from "./PlaylistItem.svelte";
   import { invoke } from "@tauri-apps/api/tauri";
   import { playlist } from "../store/playlist";
   import { mapWithConcurrency } from "./concurrentMap.js";
   import { downloadDir } from "@tauri-apps/api/path";
-  import { onMount } from "svelte/internal";
 
   //TODO: Add shift click multi select
   console.log("Playlist", $playlist);
 
   let downloadDirPath;
-  onMount(async () => (downloadDirPath = await downloadDir()));
+
+  const setDownloadDir = async (option) =>
+    (downloadDirPath = option || (await downloadDir()));
+
+  $: setDownloadDir($settings?.downloadDir);
 
   let selected: boolean[] = $playlist?.songs.map((item) => false);
   $: if ($playlist) {
