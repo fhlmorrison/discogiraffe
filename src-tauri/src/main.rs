@@ -6,7 +6,10 @@ mod songs;
 mod utils;
 mod ytdl;
 
-use crate::utils::CommandError;
+use crate::{
+    songs::{MetadataEntry, MetadataKey},
+    utils::CommandError,
+};
 
 use rusqlite::Connection;
 use songs::WriteMetadataEvent;
@@ -32,9 +35,21 @@ async fn download_song(
 
     match ytdl::download_song(url, download_path) {
         Ok(path) => {
-            match handle.db(|db| database::set_downloaded(db, &url)) {
-                Ok(()) => {
-                    print!("{}", "set as downloaded")
+            match handle.db(|db| database::add_local_song(db, &path, &url)) {
+                Ok(_) => {
+                    handle.db(|db| {
+                        database::update_metadata(
+                            db,
+                            &WriteMetadataEvent {
+                                src: path.clone(),
+                                metadata: vec![MetadataEntry {
+                                    key: MetadataKey::AudioSourceUrl,
+                                    value: serde_json::Value::String(url.to_string()),
+                                }],
+                            },
+                        )
+                    })?;
+                    println!("{}", "set as downloaded")
                 }
                 Err(e) => {
                     print!("{}", e)
