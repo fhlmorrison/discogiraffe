@@ -1,6 +1,19 @@
+import { invoke } from "@tauri-apps/api";
 import type { FileEntry } from "@tauri-apps/api/fs";
-import { writable } from "svelte/store";
+import { get, writable } from "svelte/store";
 
-export type OpenFileEntry = FileEntry & { url: string }
+export type OpenFileEntry = FileEntry & { url: string };
 
-export const openFiles = writable<OpenFileEntry[]>([])
+const { subscribe, set, update } = writable<OpenFileEntry[]>([]);
+
+const save = async () => {
+  const files = get(openFiles).map(({ path }) => path);
+  return await invoke("save_folder", { files });
+};
+
+export const openFiles = {
+  subscribe,
+  set,
+  update,
+  save,
+};
