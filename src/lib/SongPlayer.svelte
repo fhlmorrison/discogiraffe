@@ -5,6 +5,7 @@
   import FaPlayCircle from "svelte-icons/fa/FaPlayCircle.svelte";
   import FaPauseCircle from "svelte-icons/fa/FaPauseCircle.svelte";
   import { createEventDispatcher } from "svelte";
+  import { settings } from "../store/settings";
   // import { currentTime } from "./../store/player";
   let time = 0;
   export let url: string = "";
@@ -36,10 +37,26 @@
 
   const prev = () => {
     dispatch("prev", null);
+    if ($settings["autoPlay"]) {
+      setTimeout(() => {
+        audioPlayer.play();
+      }, 100);
+    }
   };
 
   const next = () => {
     dispatch("next", null);
+    if ($settings["autoPlay"]) {
+      setTimeout(() => {
+        audioPlayer.play();
+      }, 100);
+    }
+  };
+
+  const songEnded = () => {
+    if ($settings["autoPlay"]) {
+      next();
+    }
   };
 </script>
 
@@ -76,6 +93,7 @@
     bind:paused
     bind:currentTime={time}
     bind:duration
+    on:ended={songEnded}
   />
 </div>
 

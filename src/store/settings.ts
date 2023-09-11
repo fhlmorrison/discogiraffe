@@ -69,6 +69,12 @@ export const settingList: SettingEntry[] = [
     name: "Download Path",
     type: "folderPath",
   },
+  {
+    key: "autoPlay",
+    default: false,
+    name: "Auto Play",
+    type: "boolean",
+  },
 ];
 
 type Settings = {

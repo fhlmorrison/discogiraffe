@@ -17,7 +17,9 @@
 
 <div>
   <label for={entry.key}>{entry.name}</label>
-  {#if entry.type === "boolean"}{:else if entry.type === "dropdown"}
+  {#if entry.type === "boolean"}
+    <input type="checkbox" id={entry.key} bind:checked={value} />
+  {:else if entry.type === "dropdown"}
     <select id={entry.key} bind:value>
       {#each entry.options as option}
         <option value={option.key}>{option.name}</option>
