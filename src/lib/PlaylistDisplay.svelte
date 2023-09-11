@@ -6,6 +6,8 @@
   import { playlist } from "../store/playlist";
   import { mapWithConcurrency } from "./concurrentMap.js";
   import { downloadDir } from "@tauri-apps/api/path";
+  import { openFiles } from "../store/files";
+  import { loadSongsFromPath } from "./loadAssets";
 
   //TODO: Add shift click multi select
   console.log("Playlist", $playlist);
@@ -38,8 +40,11 @@
 
   const downloadSelected = () => {
     const selectedItems = $playlist?.songs.filter((item, i) => selected[i]);
-    mapWithConcurrency(selectedItems, download).then((results) => {
+    mapWithConcurrency(selectedItems, download).then(async (results) => {
       console.log(results);
+      // Open the newly downloaded files in song reader
+      openFiles.set(await loadSongsFromPath(results));
+      // TODO: open reader tab
     });
   };
 </script>

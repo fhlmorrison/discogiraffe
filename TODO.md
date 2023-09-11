@@ -1,9 +1,13 @@
 ### Flow + Routing
 
-- After DL, get list of items, queue them into metadata viewer.
+- ~~After DL, get list of items, queue them into metadata viewer.~~
+- Open song reader after download
 - embed yt-dlp
 - ~~Top level router~~
 - Player exists across tabs
+- Songs get uploader set as album on download
+- Filename can be changed in metadata viewer
+- Infer title from filename?
 
 ### Other
 
