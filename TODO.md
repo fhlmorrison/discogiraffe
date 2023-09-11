@@ -10,6 +10,8 @@
 - Tie filename to title
 - Infer title & artist from filename
 - ~~FIX: Writing metadata refreshes the metadata for the song~~
+- Open all downloaded files from a playlist in song reader
+- Figure out lazy/sequential loading on playlist viewer so it loads faster
 
 ### Other
 
