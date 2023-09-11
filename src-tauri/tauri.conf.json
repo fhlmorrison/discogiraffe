@@ -16,23 +16,21 @@
         "all": false,
         "asset": true,
         "assetScope": {
-          "allow": [
-            "**"
-          ]
+          "allow": ["**"]
         }
       },
       "fs": {
         "all": false,
         "copyFile": false,
         "createDir": false,
-        "exists": false,
+        "exists": true,
         "readDir": true,
-        "readFile": false,
+        "readFile": true,
         "removeDir": false,
         "removeFile": false,
         "renameFile": false,
-        "scope": [],
-        "writeFile": false
+        "scope": ["$APPDATA/*"],
+        "writeFile": true
       },
       "dialog": {
         "all": false,

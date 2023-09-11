@@ -2,8 +2,13 @@
   import SettingEntry from "./SettingEntry.svelte";
   import { settings, settingList } from "../store/settings";
   import FaCog from "svelte-icons/fa/FaCog.svelte";
+  import { onMount } from "svelte";
 
   let values = { ...$settings };
+
+  onMount(() => {
+    settings.load();
+  });
 
   let modalOpen = false;
   const closeModal = () => {
@@ -12,8 +17,9 @@
   };
 
   const saveChanges = () => {
-    console.log("save");
     settings.set(values);
+    settings.save();
+    console.log("saved settings");
   };
 </script>
 

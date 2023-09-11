@@ -14,7 +14,7 @@ tauri-build = { version = "1.4", features = [] }
 
 [dependencies]
 rusqlite = { version = "0.29.0", features = ["bundled"] }
-tauri = { version = "1.4", features = [ "protocol-asset",
+tauri = { version = "1.4", features = [ "fs-exists", "fs-read-file", "fs-write-file", "protocol-asset",
     "fs-read-dir",
     "dialog-open",
     "path-all",

@@ -1,4 +1,10 @@
 import { get, writable } from "svelte/store";
+import {
+  BaseDirectory,
+  exists,
+  readTextFile,
+  writeTextFile,
+} from "@tauri-apps/api/fs";
 
 type SettingValue = string | number | boolean;
 
@@ -73,12 +79,29 @@ const defaults = {};
 
 const { subscribe, set, update } = writable<Settings>({});
 
-const load = () => {
-  // Read from settings file
+const load = async () => {
+  // Check if settings file exists
+  if (!(await exists("settings.json", { dir: BaseDirectory.AppData }))) {
+    console.log("Settings file does not exist");
+    return {};
+  }
+  // Read settings file
+  const settingsFile = await readTextFile("settings.json", {
+    dir: BaseDirectory.AppData,
+  });
+  // Parse settings file
+  const settingsObject = JSON.parse(settingsFile) as Settings;
+  set(settingsObject);
 };
-const save = () => {
+const save = async () => {
+  // Get settings
+  const settingsToWrite = get(settings);
+  // Convert to string
+  const settingsToWriteString = JSON.stringify(settingsToWrite);
   // Write to settings file
-  // change locally
+  await writeTextFile("settings.json", settingsToWriteString, {
+    dir: BaseDirectory.AppData,
+  });
 };
 
 const getValue = (e: SettingEntry) => {

@@ -7,7 +7,6 @@
   export let value;
   const getValue = (e: SettingEntry) => {
     value = $settings[e.key] ?? e.default;
-    console.log(value);
   };
   //   $: getValue(entry);
   onMount(() => getValue(entry));
