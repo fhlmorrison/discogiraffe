@@ -7,7 +7,9 @@
 - Player exists across tabs
 - Songs get uploader set as album on download
 - Filename can be changed in metadata viewer
-- Infer title from filename?
+- Tie filename to title
+- Infer title & artist from filename
+- ~~FIX: Writing metadata refreshes the metadata for the song~~
 
 ### Other
 
