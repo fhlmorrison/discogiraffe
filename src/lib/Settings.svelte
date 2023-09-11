@@ -68,7 +68,7 @@
     padding: 20px;
     width: 60%;
     height: 60%;
-    background-color: #2f2f2f;
+    background-color: var(--background-color);
     /* overflow-y: scroll; */
   }
 </style>
