@@ -41,7 +41,7 @@ impl serde::Serialize for CommandError {
 }
 
 pub fn parse_filename(input: &str) -> String {
-    println!("Parsing filename: {}", input);
+    // println!("Parsing filename: {}", input);
     return input
         .trim_end()
         .trim_end_matches("\"")
