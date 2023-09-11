@@ -64,7 +64,7 @@ pub fn read_metadata(src: &str) -> Vec<MetadataEntry> {
     return metadata;
 }
 
-pub fn write_metadata(event: WriteMetadataEvent) -> Result<(), CommandError> {
+pub async fn write_metadata(event: WriteMetadataEvent) -> Result<(), CommandError> {
     println!("Writing metadata to {}", event.src);
     // let payload = event.payload().unwrap();
     // let event: WriteMetadataEvent = serde_json::from_str(payload).unwrap();
@@ -101,7 +101,12 @@ pub fn write_metadata(event: WriteMetadataEvent) -> Result<(), CommandError> {
             }
         }
     }
-    tag.write_to_path(path, id3::Version::Id3v24)?;
+    match tag.write_to_path(path, id3::Version::Id3v24) {
+        Ok(_) => (),
+        Err(e) => {
+            tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+        }
+    }
 
     Ok(())
 }

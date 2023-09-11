@@ -14,7 +14,11 @@ tauri-build = { version = "1.4", features = [] }
 
 [dependencies]
 rusqlite = { version = "0.29.0", features = ["bundled"] }
-tauri = { version = "1.4", features = [ "fs-exists", "fs-read-file", "fs-write-file", "protocol-asset",
+tauri = { version = "1.4", features = [
+    "fs-exists",
+    "fs-read-file",
+    "fs-write-file",
+    "protocol-asset",
     "fs-read-dir",
     "dialog-open",
     "path-all",
@@ -26,6 +30,7 @@ ytd-rs = { version = "0.1.7", features = ["yt-dlp"] }
 thiserror = "1.0.43"
 id3 = "1.7.0"
 base64 = "0.21.2"
+tokio = { version = "1.32.0", features = ["full"] }
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

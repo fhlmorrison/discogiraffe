@@ -47,7 +47,8 @@ async fn download_song(
                                 value: serde_json::Value::String(url.to_string()),
                             }],
                         },
-                    )?;
+                    )
+                    .await?;
                     println!("{}", "set as downloaded")
                 }
                 Err(e) => {
@@ -135,12 +136,12 @@ fn get_cover_art(src: &str) -> Result<songs::CoverArt, CommandError> {
 }
 
 #[tauri::command]
-fn write_metadata(
+async fn write_metadata(
     app_handle: tauri::AppHandle,
     event: songs::WriteMetadataEvent,
 ) -> Result<(), CommandError> {
     app_handle.db(|conn| database::update_metadata(conn, &event))?;
-    songs::write_metadata(event)?;
+    songs::write_metadata(event).await?;
     Ok(())
 }
 
