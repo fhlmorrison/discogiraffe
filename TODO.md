@@ -18,6 +18,8 @@
 - Add volume slider to player
 - Shuffle?
 - Style the settings page
+- Applying themes
+- Filter out deleted and private videos
 
 - ~~Autoplay (as setting)~~
 - ~~Prev/Next buttons~~
