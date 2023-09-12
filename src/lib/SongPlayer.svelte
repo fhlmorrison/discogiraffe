@@ -4,11 +4,10 @@
   import FaStepForward from "svelte-icons/fa/FaStepForward.svelte";
   import FaPlayCircle from "svelte-icons/fa/FaPlayCircle.svelte";
   import FaPauseCircle from "svelte-icons/fa/FaPauseCircle.svelte";
-  import { createEventDispatcher } from "svelte";
   import { settings } from "../store/settings";
+  import { openFiles, selectedIndex } from "../store/files";
   // import { currentTime } from "./../store/player";
   let time = 0;
-  export let url: string = "";
   let audioPlayer: HTMLAudioElement;
   // audioPlayer.controls = false;
   // $: audioPlayer.src = url;
@@ -16,7 +15,7 @@
   let duration = 0;
   let paused = true;
 
-  const dispatch = createEventDispatcher();
+  $: url = $openFiles[$selectedIndex]?.url ?? "";
 
   const cleanTime = (seconds) => {
     const hours = Math.floor(seconds / 3600);
@@ -36,7 +35,7 @@
   $: url && (paused = true);
 
   const prev = () => {
-    dispatch("prev", null);
+    openFiles.prev();
     if ($settings["autoPlay"]) {
       setTimeout(() => {
         audioPlayer.play();
@@ -45,7 +44,7 @@
   };
 
   const next = () => {
-    dispatch("next", null);
+    openFiles.next();
     if ($settings["autoPlay"]) {
       setTimeout(() => {
         audioPlayer.play();

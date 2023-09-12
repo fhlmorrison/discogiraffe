@@ -33,15 +33,7 @@
     </div>
   </div>
 
-  <MetaDataViewer
-    song={selectedFile}
-    on:next={() => {
-      openFiles.next();
-    }}
-    on:prev={() => {
-      openFiles.prev();
-    }}
-  />
+  <MetaDataViewer song={selectedFile} />
 
   {#if openFiles}
     <div class="row">

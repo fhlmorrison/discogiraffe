@@ -113,7 +113,7 @@
     </div>
   {/each}
 </div>
-<SongPlayer url={song?.url || ""} on:next on:prev />
+<SongPlayer />
 
 <style>
   .save {
