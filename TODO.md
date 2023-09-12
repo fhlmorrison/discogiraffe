@@ -5,7 +5,7 @@
 - embed yt-dlp
 - ~~Top level router~~
 - Player exists across tabs
-- Songs get uploader set as album on download
+- ~~Songs get uploader set as album on download~~
 - Filename can be changed in metadata viewer
 - Tie filename to title
 - Infer title & artist from filename
