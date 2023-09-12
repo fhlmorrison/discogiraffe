@@ -28,9 +28,12 @@ fn greet(name: &str) -> String {
 #[tauri::command]
 async fn download_song(
     handle: AppHandle,
-    url: &str,
+    // url: &str,
+    song: database::DbSong,
     download_path: &str,
 ) -> Result<String, CommandError> {
+    let url = song.url.as_str();
+    let channel = song.channel.unwrap_or("".to_string());
     // return ytdl::download_song(url, download_path);
 
     match ytdl::download_song(url, download_path) {
@@ -42,10 +45,16 @@ async fn download_song(
                         handle,
                         WriteMetadataEvent {
                             src: path.clone(),
-                            metadata: vec![MetadataEntry {
-                                key: MetadataKey::AudioSourceUrl,
-                                value: serde_json::Value::String(url.to_string()),
-                            }],
+                            metadata: vec![
+                                MetadataEntry {
+                                    key: MetadataKey::AudioSourceUrl,
+                                    value: serde_json::Value::String(url.to_string()),
+                                },
+                                MetadataEntry {
+                                    key: MetadataKey::Album,
+                                    value: serde_json::Value::String(channel.to_string()),
+                                },
+                            ],
                         },
                     )
                     .await?;

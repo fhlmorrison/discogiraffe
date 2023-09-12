@@ -34,7 +34,7 @@
 
   const download = async (item: dbSong): Promise<string> =>
     invoke("download_song", {
-      url: item.url,
+      song: item,
       downloadPath: downloadDirPath,
     });
 
