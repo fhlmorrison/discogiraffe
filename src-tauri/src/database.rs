@@ -308,3 +308,11 @@ pub fn set_downloaded(conn: &Connection, url: &str) -> Result<()> {
     conn.execute("UPDATE songs SET downloaded = true WHERE url = ?1", [url])?;
     Ok(())
 }
+
+pub fn update_filename(conn: &Connection, path: &str, new_path: &str) -> Result<()> {
+    conn.execute(
+        "UPDATE songs SET path = ?1 WHERE path = ?2",
+        [new_path, path],
+    )?;
+    Ok(())
+}

@@ -1,11 +1,24 @@
 <script lang="ts">
   import type { MetadataEntry } from "./loadAssets";
-  import { getMetadata, getPictureData, writeMetadata } from "./loadAssets";
+  import {
+    change_filename,
+    getMetadata,
+    getPictureData,
+    writeMetadata,
+  } from "./loadAssets";
   import SongPlayer from "./SongPlayer.svelte";
   import type { OpenFileEntry } from "../store/files";
   export let song: OpenFileEntry;
 
   let DEFAULT_IMAGE = "./record.png";
+
+  let fileName: string = "";
+
+  $: setFilename(song?.name);
+
+  const setFilename = (name: string) => {
+    fileName = name ?? "";
+  };
 
   $: loadMetadata(song?.path);
   let metadata: MetadataEntry[] = [
@@ -80,10 +93,22 @@
   };
 
   $: song && getPicture();
+
+  $: fileName = fileName.replace(/[<>:/\\\|\?"\*\^]/g, "");
+
+  const changeFilename = () => {
+    change_filename(song?.path, fileName).then((new_path) => {
+      console.log(`"${song.name}"" renamed to "${fileName}" at "${new_path}""`);
+      song.name = fileName;
+      song.path = new_path;
+    });
+  };
 </script>
 
-{song?.name || "No song selected"}
+<!-- {song?.name || "No song selected"} -->
 <!-- <audio src={song?.url || ""} /> -->
+<input type="text" bind:value={fileName} maxlength="100" />
+<button on:click={changeFilename}> Save </button>
 
 <div>
   {#if editMode}

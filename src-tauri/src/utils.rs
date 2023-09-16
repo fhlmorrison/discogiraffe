@@ -16,6 +16,9 @@ pub enum CommandError {
 
     #[error("SerdeJson error: {0}")]
     SerdeJson(#[from] serde_json::Error),
+
+    #[error("Custom error: {0}")]
+    CustomError(String),
 }
 
 // impl std::error::Error for CommandError {

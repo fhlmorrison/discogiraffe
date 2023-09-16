@@ -125,3 +125,7 @@ export async function getPictureData(src: string): Promise<string> {
     ? `data:${pictureString.mime_type};base64, ${pictureString.b64}`
     : "";
 }
+
+export async function change_filename(src: string, newName: string) {
+  return invoke<string>("change_filename", { src, newName });
+}

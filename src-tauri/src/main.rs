@@ -154,6 +154,27 @@ async fn write_metadata(
     Ok(())
 }
 
+#[tauri::command]
+async fn change_filename(
+    app_handle: tauri::AppHandle,
+    src: &str,
+    new_name: &str,
+) -> Result<String, CommandError> {
+    let path = PathBuf::from(src);
+    let new_path = path.with_file_name(new_name);
+
+    let [path_str, new_path_str] = [
+        src,
+        new_path
+            .to_str()
+            .ok_or(CommandError::CustomError("Invalid file name".to_string()))?,
+    ];
+
+    std::fs::rename(&path, &new_path)?;
+    app_handle.db(|conn| database::update_filename(conn, &path_str, &new_path_str))?;
+    Ok(new_path_str.to_string())
+}
+
 fn main() {
     tauri::Builder::default()
         .manage(database::AppState {
@@ -169,7 +190,8 @@ fn main() {
             add_playlist,
             load_playlists,
             load_playlist,
-            save_folder
+            save_folder,
+            change_filename
         ])
         .setup(|app| {
             let handle = app.handle();
