@@ -8,6 +8,10 @@
   } from "./loadAssets";
   import SongPlayer from "./SongPlayer.svelte";
   import type { OpenFileEntry } from "../store/files";
+  import { createEventDispatcher } from "svelte";
+
+  const dispatch = createEventDispatcher();
+
   export let song: OpenFileEntry;
 
   let DEFAULT_IMAGE = "./record.png";
@@ -97,11 +101,7 @@
   $: fileName = fileName.replace(/[<>:/\\\|\?"\*\^]/g, "");
 
   const changeFilename = () => {
-    change_filename(song?.path, fileName).then((new_path) => {
-      console.log(`"${song.name}"" renamed to "${fileName}" at "${new_path}""`);
-      song.name = fileName;
-      song.path = new_path;
-    });
+    dispatch("changeFilename", fileName);
   };
 </script>
 

@@ -6,7 +6,9 @@
 - ~~Top level router~~
 - Player exists across tabs
 - ~~Songs get uploader set as album on download~~
-- Filename can be changed in metadata viewer
+- ~~Filename can be changed in metadata viewer~~
+- ~~Refresh file list on filename change~~
+- Remove .mp3 from filename display so it can't be changed
 - Tie filename to title
 - Infer title & artist from filename
 - ~~FIX: Writing metadata refreshes the metadata for the song~~

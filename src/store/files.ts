@@ -28,6 +28,13 @@ const prev = () => {
 const select = (i: number) => {
   updateIndex(() => i);
 };
+const rename = (i: number, name: string, path: string = "") => {
+  update((files) => {
+    files[i].name = name;
+    files[i].path = path || files[i].path;
+    return files;
+  });
+};
 
 export const openFiles = {
   subscribe,
@@ -40,4 +47,5 @@ export const openFiles = {
   next,
   prev,
   select,
+  rename,
 };
