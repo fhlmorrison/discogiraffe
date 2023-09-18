@@ -27,7 +27,7 @@ Recommended IDE Setup:
 
 #### Setup
 
-1. Clone the repo
-2. `cd discogiraffe` into the repo
+1. Clone the repo `git clone https://github.com/fhlmorrison/discogiraffe.git`
+2. `cd discogiraffe`
 3. `pnpm install`
 4. `pnpm tauri dev`
