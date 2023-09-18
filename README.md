@@ -28,6 +28,6 @@ Recommended IDE Setup:
 #### Setup
 
 1. Clone the repo
-2. `cd` into the repo
+2. `cd ./discogiraffe` into the repo
 3. `pnpm install`
 4. `pnpm tauri dev`
