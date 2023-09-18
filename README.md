@@ -6,6 +6,10 @@
 
 ## A music library manager for YouTube downloads.
 
+<p align="center" display="inline">
+    <img height=256 src="./examples/pl_display.png">
+    <img height=256 src="./examples/song_reader.png">
+</p>
 ### Requirements
 
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp)
