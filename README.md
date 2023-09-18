@@ -29,6 +29,6 @@ Recommended IDE Setup:
 
 1. Clone the repo `git clone https://github.com/fhlmorrison/discogiraffe.git`
 2. Open the project directory `cd discogiraffe`
-3. Install dependencies `pnpm install`
+3. Install node dependencies `pnpm install`
 4. Install rust dependencies `cargo install`
 5. Run app in dev mode `pnpm tauri dev`
