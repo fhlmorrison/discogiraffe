@@ -10,6 +10,7 @@
     <img height=256 src="./examples/pl_display.png">
     <img height=256 src="./examples/song_reader.png">
 </p>
+
 ### Requirements
 
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp)
@@ -26,7 +27,8 @@ Recommended IDE Setup:
 
 #### Setup
 
-1. Clone the repo
-2. `cd` into the repo
-3. `pnpm install`
-4. `pnpm tauri dev`
+1. Clone the repo `git clone https://github.com/fhlmorrison/discogiraffe.git`
+2. Open the project directory `cd discogiraffe`
+3. Install node dependencies `pnpm install`
+4. Install rust dependencies `cargo install`
+5. Run app in dev mode `pnpm tauri dev`
