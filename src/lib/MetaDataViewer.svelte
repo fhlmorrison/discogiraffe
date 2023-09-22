@@ -107,8 +107,6 @@
 
 <!-- {song?.name || "No song selected"} -->
 <!-- <audio src={song?.url || ""} /> -->
-<input type="text" bind:value={fileName} maxlength="100" />
-<button on:click={changeFilename}> Save </button>
 
 <div>
   {#if editMode}
@@ -129,6 +127,13 @@
       }}
       height="256px"
     />
+  </div>
+  <div class="filename field">
+    Filename
+    <div class="filename">
+      <input type="text" bind:value={fileName} maxlength="100" />
+      <button on:click={changeFilename}> Save </button>
+    </div>
   </div>
   {#each metadata as entry}
     <!-- content here -->
@@ -151,7 +156,7 @@
   .inputs {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
     grid-gap: 1em;
   }
   .field {
@@ -159,7 +164,7 @@
     flex-direction: column;
   }
   .cover-art {
-    grid-area: 1 / 1 / 3 / 2;
+    grid-area: 1 / 1 / 4 / 2;
   }
   .cover-art img {
     height: 256px;
@@ -167,5 +172,15 @@
     object-fit: cover;
     border-radius: 10px;
     align-content: center;
+  }
+  .filename {
+    grid-area: 1 / 2 / 2 / 4;
+    display: flex;
+  }
+  .filename input {
+    flex-grow: 1;
+  }
+  input[readonly] {
+    filter: invert(0.15);
   }
 </style>
