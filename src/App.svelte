@@ -34,10 +34,9 @@
   }
 
   main {
-    /* overflow-y: scroll; */
     flex: 1 1 auto;
+    overflow: hidden;
   }
-
   footer {
     width: 100%;
   }

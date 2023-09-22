@@ -93,5 +93,7 @@
     flex-direction: column;
     justify-content: left;
     align-items: center;
+    overflow-y: scroll;
+    overflow-x: hidden;
   }
 </style>

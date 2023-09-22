@@ -42,21 +42,28 @@
   </div>
 
   <MetaDataViewer song={selectedFile} on:changeFilename={changeFilename} />
-
-  {#if openFiles}
-    <div class="row">
-      <ul>
-        {#each $openFiles as file, i}
-          <SongListItem
-            song={file}
-            index={i}
-            on:select={(e) => selectSong(e.detail)}
-          />
-        {/each}
-      </ul>
-    </div>
-  {/if}
 </div>
 
+{#if openFiles}
+  <div class="list">
+    <ol>
+      {#each $openFiles as file, i}
+        <SongListItem
+          song={file}
+          index={i}
+          on:select={(e) => selectSong(e.detail)}
+        />
+      {/each}
+    </ol>
+  </div>
+{/if}
+
 <style>
+  .list {
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
 </style>
