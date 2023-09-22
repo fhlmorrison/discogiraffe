@@ -36,6 +36,7 @@
   main {
     flex: 1 1 auto;
     overflow: hidden;
+    justify-content: flex-start;
   }
   footer {
     width: 100%;
