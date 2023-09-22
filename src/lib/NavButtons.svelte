@@ -1,34 +1,5 @@
 <script lang="ts">
-  import GetPlaylist from "./GetPlaylist.svelte";
-  import PlaylistDisplay from "./PlaylistDisplay.svelte";
-  import MetaDataReader from "./SongReader.svelte";
-  import PlaylistLibrary from "./PlaylistLibrary.svelte";
-  import { currentTab } from "../store/tabs";
-  import type { Route } from "../store/tabs";
-
-  let routes: Route[] = [
-    {
-      name: "Playlist Library",
-      path: "/",
-      component: PlaylistLibrary,
-    },
-    {
-      name: "Get Playlist",
-      path: "/getplaylist",
-      component: GetPlaylist,
-    },
-    {
-      name: "Playlist Display",
-      path: "/playlist",
-      component: PlaylistDisplay,
-    },
-    {
-      name: "Song Reader",
-      path: "/songreader",
-      component: MetaDataReader,
-    },
-  ];
-
+  import { currentTab, routes } from "../store/tabs";
   currentTab.set(routes[0]);
 </script>
 
