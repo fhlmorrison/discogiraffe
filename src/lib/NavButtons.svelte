@@ -3,12 +3,8 @@
   import PlaylistDisplay from "./PlaylistDisplay.svelte";
   import MetaDataReader from "./SongReader.svelte";
   import PlaylistLibrary from "./PlaylistLibrary.svelte";
-
-  type Route = {
-    name: string;
-    path: string;
-    component: any;
-  };
+  import { currentTab } from "../store/tabs";
+  import type { Route } from "../store/tabs";
 
   let routes: Route[] = [
     {
@@ -33,25 +29,18 @@
     },
   ];
 
-  let currentRoute: Route = routes[0];
-  const selectTab = (event) => {
-    currentRoute = routes.find((route) => route.path === event?.detail?.tab);
-  };
+  currentTab.set(routes[0]);
 </script>
 
 <div>
   {#each routes as route}
     <button
-      class={route === currentRoute ? "active" : ""}
+      class={route === $currentTab ? "active" : ""}
       on:click={() => {
-        currentRoute = route;
+        currentTab.set(route);
       }}>{route.name}</button
     >
   {/each}
-  <!-- <SongReader /> -->
-</div>
-<div>
-  <svelte:component this={currentRoute?.component} on:tab-select={selectTab} />
 </div>
 
 <style>

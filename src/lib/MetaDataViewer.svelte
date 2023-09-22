@@ -138,7 +138,8 @@
     </div>
   {/each}
 </div>
-<SongPlayer />
+
+<!-- <SongPlayer /> -->
 
 <style>
   .save {

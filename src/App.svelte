@@ -1,27 +1,24 @@
 <script lang="ts">
+  import { currentTab } from "./store/tabs";
   import Router from "./lib/Router.svelte";
   import Settings from "./lib/Settings.svelte";
+  import SongPlayer from "./lib/SongPlayer.svelte";
+  import NavButtons from "./lib/NavButtons.svelte";
 </script>
 
 <header>
   <Settings />
+  <NavButtons />
 </header>
 
 <main class="container">
-  <Router />
-  <!-- <h1>YouTube Playlist Downloader</h1>
-  <div class="row">
-    <div class="playlist-section">
-      <div class="row">
-        <GetPl />
-      </div>
-      <PlaylistDisplay />
-    </div>
-  </div>
-  <div class="row">
-    <MetaDataReader />
-  </div> -->
+  <!-- <Router /> -->
+  <svelte:component this={$currentTab.component} />
 </main>
+
+<footer>
+  <SongPlayer />
+</footer>
 
 <style>
   .playlist-section {
@@ -30,7 +27,18 @@
 
   header {
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
     align-items: center;
+    flex: 0 1 auto;
+  }
+
+  main {
+    /* overflow-y: scroll; */
+    flex: 1 1 auto;
+  }
+
+  footer {
+    width: 100%;
   }
 </style>

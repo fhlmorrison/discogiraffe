@@ -26,5 +26,6 @@
     {
       "path": "./tsconfig.node.json"
     }
-  ]
+  ],
+  "types": ["svelte", "vite/client"]
 }
