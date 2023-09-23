@@ -1,6 +1,5 @@
 <script lang="ts">
   import { currentTab } from "./store/tabs";
-  import Router from "./lib/Router.svelte";
   import Settings from "./lib/Settings.svelte";
   import SongPlayer from "./lib/SongPlayer.svelte";
   import NavButtons from "./lib/NavButtons.svelte";

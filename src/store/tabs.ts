@@ -1,5 +1,4 @@
 import { writable } from "svelte/store";
-import GetPlaylist from "../lib/GetPlaylist.svelte";
 import PlaylistDisplay from "../lib/PlaylistDisplay.svelte";
 import MetaDataReader from "../lib/SongReader.svelte";
 import PlaylistLibrary from "../lib/PlaylistLibrary.svelte";
@@ -10,11 +9,6 @@ export const routes: Route[] = [
     path: "/",
     component: PlaylistLibrary,
   },
-  // {
-  //   name: "Get Playlist",
-  //   path: "/getplaylist",
-  //   component: GetPlaylist,
-  // },
   {
     name: "Playlist Display",
     path: "/playlist",
