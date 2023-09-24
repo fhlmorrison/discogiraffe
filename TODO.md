@@ -8,6 +8,7 @@
 - Open all downloaded files from a playlist in song reader
 - Figure out lazy/sequential loading on playlist viewer so it loads faster
 - Try a virtual list for playlist viewer
+- Add playlist info to playlist display
 
 - ~~Player exists across tabs~~
 - ~~Top level router~~
