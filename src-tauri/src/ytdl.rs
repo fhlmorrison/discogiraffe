@@ -1,27 +1,21 @@
 use crate::database::{DbPlaylist, DbPlaylistFull, DbSong};
 use crate::utils::{parse_filename, CommandError};
-use rusqlite::{params, Connection};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
-use ytd_rs::{Arg, YoutubeDL};
+use tauri::api::process::Command;
+
+const YTDL_COMMAND: &str = "yt-dlp";
 
 pub fn fetch_playlist(url: &str) -> Result<String, CommandError> {
-    let args = vec![
-        Arg::new("-J"),
-        Arg::new("--skip-download"),
-        Arg::new("--flat-playlist"),
-    ];
-    let link = url;
-    let path = PathBuf::from("./");
-
-    let ytd = YoutubeDL::new(&path, args, link)?;
+    let args = vec!["-J", "--skip-download", "--flat-playlist", url];
 
     println!("Downloading playlist info for {}", url);
-    let download = ytd.download()?;
+    let output = Command::new(YTDL_COMMAND).args(args).output()?;
 
-    // println!("{}", download.output().to_string());
-
-    return Ok(download.output().to_owned());
+    match output.status.success() {
+        true => Ok(output.stdout),
+        false => Err(CommandError::CustomError(output.stderr)),
+    }
 }
 
 #[derive(Serialize, Deserialize)]
@@ -102,29 +96,79 @@ pub fn get_playlist_info(url: &str) -> Result<DbPlaylistFull, CommandError> {
 
 pub fn download_song(url: &str, download_path: &str) -> Result<String, CommandError> {
     let args = vec![
-        Arg::new("-icwx"),
-        Arg::new_with_arg("-f", "bestaudio/best"),
-        Arg::new_with_arg("-o", "%(title)s-%(id)s.%(ext)s"),
-        Arg::new_with_arg("--audio-format", "mp3"),
-        Arg::new_with_arg("--audio-quality", "0"),
-        Arg::new("--embed-thumbnail"),
+        "-icwx",
+        "-f",
+        "bestaudio/best",
+        "-o",
+        "%(title)s-%(id)s.%(ext)s",
+        "--audio-format",
+        "mp3",
+        "--audio-quality",
+        "0",
+        "--embed-thumbnail",
+        url,
     ];
     let path = PathBuf::from(download_path);
 
-    // print!("yt-dlp");
-    // args.iter().for_each(|arg| print!(" {}", arg.to_string()));
-    // print!(" {}\n", url);
-
-    let ytd = YoutubeDL::new(&path, args, url)?;
-
     println!("Downloading song from {} to {}", url, path.display());
-    let download = ytd.download()?;
 
-    let filename = parse_filename(download.output());
-    let filepath = path.join(filename);
-    println!("Downloaded song to {}", filepath.display());
+    let output = Command::new(YTDL_COMMAND)
+        .current_dir(path.clone())
+        .args(args)
+        .output()?;
 
-    return Ok(filepath.display().to_string());
+    match output.status.success() {
+        true => {
+            let filename = parse_filename(output.stdout.as_str());
+            let filepath = path.join(filename);
+            println!("Downloaded song to {}", filepath.display());
+            Ok(filepath.display().to_string())
+        }
+        false => Err(CommandError::CustomError(output.stderr)),
+    }
+}
+
+mod test_bin {
+    use crate::utils::{parse_filename, CommandError};
+    use std::path::PathBuf;
+    use tauri::api::process::{Command, CommandEvent};
+
+    const YTDL_COMMAND: &str = "yt-dlp";
+
+    fn download_song(url: &str, download_path: &str) -> Result<String, CommandError> {
+        let args = vec![
+            "-icwx",
+            "-f",
+            "bestaudio/best",
+            "-o",
+            "%(title)s-%(id)s.%(ext)s",
+            "--audio-format",
+            "mp3",
+            "--audio-quality",
+            "0",
+            "--embed-thumbnail",
+            url,
+        ];
+        let path = PathBuf::from(download_path);
+
+        println!("Downloading song from {} to {}", url, path.display());
+
+        let output = Command::new(YTDL_COMMAND)
+            .current_dir(path.clone())
+            .args(args)
+            .output()?;
+
+        match output.status.success() {
+            true => {
+                let filename = parse_filename(output.stdout.as_str());
+                let filepath = path.join(filename);
+                println!("Downloaded song to {}", filepath.display());
+                return Ok(filepath.display().to_string());
+            }
+            false => return Err(CommandError::CustomError(output.stderr)),
+        };
+        Ok("".to_string())
+    }
 }
 
 mod tests {

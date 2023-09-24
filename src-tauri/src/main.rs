@@ -16,7 +16,6 @@ use songs::WriteMetadataEvent;
 use tauri::{AppHandle, Manager};
 
 use std::path::PathBuf;
-use ytd_rs::{Arg, YoutubeDL};
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]

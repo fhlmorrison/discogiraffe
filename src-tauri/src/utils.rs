@@ -5,9 +5,6 @@ pub enum CommandError {
     #[error("std::IO error: {0}")]
     Io(#[from] std::io::Error),
 
-    #[error("YoutubeDL error: {0}")]
-    YoutubeDL(#[from] ytd_rs::error::YoutubeDLError),
-
     #[error("Id3 error: {0}")]
     Id3(#[from] id3::Error),
 
@@ -16,6 +13,9 @@ pub enum CommandError {
 
     #[error("SerdeJson error: {0}")]
     SerdeJson(#[from] serde_json::Error),
+
+    #[error("Tauri API error: {0}")]
+    TauriAPI(#[from] tauri::api::Error),
 
     #[error("Custom error: {0}")]
     CustomError(String),
