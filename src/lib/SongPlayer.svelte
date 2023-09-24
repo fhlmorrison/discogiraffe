@@ -79,13 +79,17 @@
       </div>
     </div>
   </div>
-  <div class="progress" on:click={jumpto}>
-    <div
-      class="progress-bar"
-      style={`--progress: ${(time / duration) * 100}%`}
-    />
+  <div class="row">
+    <div class="progress" on:click={jumpto}>
+      <div
+        class="progress-bar"
+        style={`--progress: ${(time / duration) * 100}%`}
+      />
+    </div>
+    <div class="duration">
+      {cleanTime(time)} / {cleanTime(duration)}
+    </div>
   </div>
-  {cleanTime(time)} / {cleanTime(duration)}
   <audio
     src={url}
     bind:this={audioPlayer}
