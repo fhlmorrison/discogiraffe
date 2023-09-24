@@ -9,6 +9,7 @@
 - Figure out lazy/sequential loading on playlist viewer so it loads faster
 - Try a virtual list for playlist viewer
 - Add playlist info to playlist display
+- Add sliding to playback bar
 
 - ~~Player exists across tabs~~
 - ~~Top level router~~
