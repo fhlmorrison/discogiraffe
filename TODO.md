@@ -1,20 +1,21 @@
 ### Flow + Routing
 
-- ~~After DL, get list of items, queue them into metadata viewer.~~
 - Open song reader after download
 - embed yt-dlp
-- ~~Top level router~~
-- Player exists across tabs
-- ~~Songs get uploader set as album on download~~
-- ~~Filename can be changed in metadata viewer~~
-- ~~Refresh file list on filename change~~
 - Remove .mp3 from filename display so it can't be changed
 - Tie filename to title
 - Infer title & artist from filename
-- ~~FIX: Writing metadata refreshes the metadata for the song~~
 - Open all downloaded files from a playlist in song reader
 - Figure out lazy/sequential loading on playlist viewer so it loads faster
 - Try a virtual list for playlist viewer
+
+- ~~Player exists across tabs~~
+- ~~Top level router~~
+- ~~After DL, get list of items, queue them into metadata viewer.~~
+- ~~Songs get uploader set as album on download~~
+- ~~Filename can be changed in metadata viewer~~
+- ~~Refresh file list on filename change~~
+- ~~FIX: Writing metadata refreshes the metadata for the song~~
 
 ### Other
 
