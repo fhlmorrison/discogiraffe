@@ -15,6 +15,8 @@
   let duration = 0;
   let paused = true;
 
+  let progressElement: HTMLDivElement;
+
   $: url = $openFiles[$selectedIndex]?.url ?? "";
 
   const cleanTime = (seconds) => {
@@ -27,7 +29,7 @@
   };
 
   const jumpto = (e) => {
-    const rect = e.target.getBoundingClientRect();
+    const rect = progressElement.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const percent = x / rect.width;
     audioPlayer.currentTime = percent * duration;
@@ -80,7 +82,7 @@
     </div>
   </div>
   <div class="row">
-    <div class="progress" on:click={jumpto}>
+    <div class="progress" on:click={jumpto} bind:this={progressElement}>
       <div
         class="progress-bar"
         style={`--progress: ${(time / duration) * 100}%`}
