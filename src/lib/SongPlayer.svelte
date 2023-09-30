@@ -4,6 +4,7 @@
   import FaStepForward from "svelte-icons/fa/FaStepForward.svelte";
   import FaPlayCircle from "svelte-icons/fa/FaPlayCircle.svelte";
   import FaPauseCircle from "svelte-icons/fa/FaPauseCircle.svelte";
+  import FaVolumeUp from "svelte-icons/fa/FaVolumeUp.svelte";
   import { settings } from "../store/settings";
   import { openFiles, selectedIndex } from "../store/files";
   // import { currentTime } from "./../store/player";
@@ -13,6 +14,8 @@
   // $: audioPlayer.src = url;
   // let currentTime = 0;
   let duration = 0;
+  let volume = 0.75;
+  $: console.log("Volume:", volume);
   let paused = true;
 
   let progressElement: HTMLDivElement;
@@ -81,15 +84,28 @@
       </div>
     </div>
   </div>
-  <div class="row">
+  <div class="play-bar">
+    <div class="duration">
+      {cleanTime(time)} / {cleanTime(duration)}
+    </div>
     <div class="progress" on:click={jumpto} bind:this={progressElement}>
       <div
         class="progress-bar"
         style={`--progress: ${(time / duration) * 100}%`}
       />
     </div>
-    <div class="duration">
-      {cleanTime(time)} / {cleanTime(duration)}
+    <div class="volume">
+      <div class="volume-icon">
+        <FaVolumeUp />
+      </div>
+      <input
+        type="range"
+        min="0"
+        max="1"
+        step="0.01"
+        bind:value={volume}
+        on:input={() => (audioPlayer.volume = volume)}
+      />
     </div>
   </div>
   <audio
@@ -108,13 +124,13 @@
   }
 
   .progress {
-    width: clamp(500px, 33%, 100%);
+    width: clamp(400px, 33%, 40%);
     height: 5px;
     background-color: rgba(200, 200, 200, 50);
     position: relative;
     border-radius: var(--progress-bar-radius);
     overflow: hidden;
-    margin: auto;
+    /* margin: auto; */
   }
   .progress-bar {
     height: 100%;
@@ -155,4 +171,51 @@
     height: 40px;
     width: 40px;
   }
+
+  .duration {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    width: 30%;
+  }
+
+  .volume {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    width: 30%;
+  }
+  /* .volume > * {
+    outline: black solid 1px;
+  } */
+  .volume-icon {
+    height: 20px;
+    align-content: center;
+    color: var(--button-color);
+    /* object-fit: contain; */
+  }
+
+  input[type="range"] {
+    /* -webkit-appearance: none; */
+    margin: 0;
+    padding: 0;
+    height: 20px;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    box-shadow: none;
+  }
+
+  .play-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+  /* .play-bar > * {
+    outline: black solid 1px;
+  } */
 </style>
