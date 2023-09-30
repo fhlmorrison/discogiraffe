@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api";
 import type { FileEntry } from "@tauri-apps/api/fs";
+import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { get, writable } from "svelte/store";
 
 export type OpenFileEntry = FileEntry & { url: string };
@@ -32,6 +33,7 @@ const rename = (i: number, name: string, path: string = "") => {
   update((files) => {
     files[i].name = name;
     files[i].path = path || files[i].path;
+    files[i].url = convertFileSrc(files[i].path);
     return files;
   });
 };
