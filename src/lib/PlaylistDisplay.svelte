@@ -50,6 +50,7 @@
         // Open the newly downloaded files in song reader
         openFiles.set(await loadSongsFromPath(results));
         // TODO: open reader tab
+        currentTab.select("/songreader");
       }
     );
   };

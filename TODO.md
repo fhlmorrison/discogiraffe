@@ -1,15 +1,15 @@
 ### Flow + Routing
 
-- Open song reader after download
 - embed yt-dlp
 - Remove .mp3 from filename display so it can't be changed
 - Tie filename to title
 - Infer title & artist from filename
-- Open all downloaded files from a playlist in song reader
 - Try a virtual list for playlist viewer
 - Add playlist info to playlist display
 - Add sliding to playback bar
 
+- ~~Open song reader after download~~
+- ~~Open all downloaded files from a playlist in song reader~~
 - ~~Figure out lazy/sequential loading on playlist viewer so it loads faster~~
 - ~~Player exists across tabs~~
 - ~~Top level router~~
