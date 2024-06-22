@@ -14,7 +14,7 @@
 
 <div class="item">
   <div class="thumbnail">
-    <img src={item.thumbnail} alt={item.id} height="90px" />
+    <img src={item.thumbnail} alt={item.id} height="90px" loading="lazy" />
     <a class="link" target="_blank" href={item.url}>
       <FaPlay />
     </a>
