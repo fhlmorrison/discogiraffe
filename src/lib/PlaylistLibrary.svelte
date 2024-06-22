@@ -13,6 +13,8 @@
 
   import { currentTab } from "../store/tabs";
 
+  let refreshPromise;
+
   onMount(() => {
     loadList();
   });
@@ -26,6 +28,7 @@
     adding = false;
   };
   const choosePlaylist = (selectedPlaylist: dbPlaylist) => {
+    console.log("selected", selectedPlaylist);
     selectPlaylist(selectedPlaylist.id);
     // Open playlist list view
     currentTab.select("/playlist");
@@ -33,6 +36,18 @@
   const loadList = () => {
     loadPlaylists();
     console.log("loaded");
+  };
+  const refreshPlaylist = async (pl: dbPlaylist) => {
+    refreshPromise = addPlaylist(pl.url);
+    refreshPromise
+      .then(() => {
+        loadPlaylists().then(() => {
+          console.log("loaded");
+        });
+      })
+      .catch((e) => {
+        console.error(e);
+      });
   };
 </script>
 
@@ -53,13 +68,35 @@
       on:click={() => choosePlaylist(playlist)}
       on:keydown={() => {}}
     >
-      <button
-        class="refresh"
-        on:click={(e) => {
-          e.preventDefault();
-          addPlaylist(playlist.url);
-        }}><MdRefresh /></button
-      >
+      {#await refreshPromise}
+        <button
+          class="refresh loading"
+          disabled
+          on:click={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            refreshPlaylist(playlist);
+          }}><MdRefresh /></button
+        >
+      {:then}
+        <button
+          class="refresh"
+          on:click={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            refreshPlaylist(playlist);
+          }}><MdRefresh /></button
+        >
+      {:catch error}
+        <button
+          class="refresh error"
+          on:click={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            refreshPlaylist(playlist);
+          }}><MdRefresh /></button
+        >
+      {/await}
       <img src={playlist.thumbnail} alt={playlist.title} />
       <div class="playlist-title">{playlist.title}</div>
       <div class="playlist-description">{playlist.description}</div>
@@ -125,5 +162,19 @@
     width: 30px;
     align-self: center;
     justify-self: center;
+  }
+  /* Define the rotating animation */
+  @keyframes spin {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  .loading {
+    border-color: #0f0;
+    animation: spin 1s linear infinite;
+  }
+
+  .error {
+    border-color: #f00;
   }
 </style>

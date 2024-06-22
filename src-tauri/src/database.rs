@@ -98,11 +98,12 @@ pub fn init_db(handle: &AppHandle) -> Result<Connection> {
 
     conn.execute(
         "CREATE TABLE IF NOT EXISTS playlist_songs (
-            id STRING PRIMARY KEY,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             playlist_id STRING NOT NULL,
-            song_id INTEGER NOT NULL,
-            FOREIGN KEY (playlist_id) REFERENCES playlists(id),
-            FOREIGN KEY (song_id) REFERENCES songs(id)
+            song_id STRING NOT NULL,
+            UNIQUE (playlist_id, song_id),
+            FOREIGN KEY (playlist_id) REFERENCES playlists(id) ON DELETE CASCADE ON UPDATE CASCADE,
+            FOREIGN KEY (song_id) REFERENCES songs(id) ON DELETE CASCADE ON UPDATE CASCADE
         )",
         [],
     )?;
@@ -177,7 +178,8 @@ pub fn get_playlist(conn: &Connection, id: &str) -> Result<DbPlaylistFull, Comma
     let mut stmt = conn.prepare(
         "SELECT songs.* FROM songs
         INNER JOIN playlist_songs ON (songs.id = playlist_songs.song_id)
-        WHERE playlist_songs.playlist_id = ?1;",
+        WHERE playlist_songs.playlist_id = ?1
+        ORDER BY playlist_songs.id;",
     )?;
 
     let rows = stmt.query_map([id], |row| {
@@ -224,13 +226,12 @@ pub fn add_playlist(conn: &Connection, playlist: DbPlaylistFull) -> Result<(), C
     )?;
 
     // TODO: replace unwraps
-
     songs.iter().for_each(|song| {
         tx.execute(
             "INSERT INTO songs 
             (id, title, url, thumbnail, path, downloaded, artist, album, audio_source_url, channel, duration) 
             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)
-            ON CONFLICT DO NOTHING
+            ON CONFLICT(id) DO NOTHING
             ",
             params![
                 song.id,
@@ -248,7 +249,7 @@ pub fn add_playlist(conn: &Connection, playlist: DbPlaylistFull) -> Result<(), C
         )
         .unwrap();
         tx.execute(
-            "INSERT INTO playlist_songs (playlist_id, song_id) VALUES (?1, ?2) ON CONFLICT DO NOTHING",
+            "INSERT INTO playlist_songs (playlist_id, song_id) VALUES (?1, ?2) ON CONFLICT(playlist_id, song_id) DO NOTHING",
             params![playlist.id.to_owned(), song.id.to_owned()],
         )
         .unwrap();
