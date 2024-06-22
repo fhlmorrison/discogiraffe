@@ -6,11 +6,11 @@
 - Tie filename to title
 - Infer title & artist from filename
 - Open all downloaded files from a playlist in song reader
-- Figure out lazy/sequential loading on playlist viewer so it loads faster
 - Try a virtual list for playlist viewer
 - Add playlist info to playlist display
 - Add sliding to playback bar
 
+- ~~Figure out lazy/sequential loading on playlist viewer so it loads faster~~
 - ~~Player exists across tabs~~
 - ~~Top level router~~
 - ~~After DL, get list of items, queue them into metadata viewer.~~
@@ -21,12 +21,12 @@
 
 ### Other
 
-- Add volume slider to player
 - Shuffle?
 - Style the settings page
 - Applying themes
 - Filter out deleted and private videos
 
+- ~~Add volume slider to player~~
 - ~~Autoplay (as setting)~~
 - ~~Prev/Next buttons~~
 - ~~Adding playlist to DB - Transform to remove useless info~~
