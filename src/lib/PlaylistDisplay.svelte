@@ -14,6 +14,8 @@
 
   let downloadDirPath;
 
+  let downloadPromise: Promise<any>;
+
   const setDownloadDir = async (option) =>
     (downloadDirPath = option || (await downloadDir()));
 
@@ -40,20 +42,32 @@
 
   const downloadSelected = () => {
     const selectedItems = $playlist?.songs.filter((item, i) => selected[i]);
-    mapWithConcurrency(selectedItems, download).then(async (results) => {
-      console.log(results);
-      // Open the newly downloaded files in song reader
-      openFiles.set(await loadSongsFromPath(results));
-      // TODO: open reader tab
-    });
+    downloadPromise = mapWithConcurrency(selectedItems, download).then(
+      async (results) => {
+        console.log(results);
+        // Open the newly downloaded files in song reader
+        openFiles.set(await loadSongsFromPath(results));
+        // TODO: open reader tab
+      }
+    );
   };
 </script>
 
 {#if $playlist}
   <div class="button-row">
-    <button class="download" on:click={downloadSelected}
-      >Download Selected</button
-    >
+    {#await downloadPromise}
+      <button class="download loading" disabled on:click={downloadSelected}
+        >Downloading...</button
+      >
+    {:then}
+      <button class="download" on:click={downloadSelected}
+        >Download Selected</button
+      >
+    {:catch error}
+      <button class="download error" on:click={downloadSelected}
+        >Download Selected</button
+      >
+    {/await}
     <button on:click={initSelected}>Deselect All</button>
     <button on:click={selectAll}>Select All</button>
   </div>
@@ -95,5 +109,13 @@
     align-items: center;
     overflow-y: scroll;
     overflow-x: hidden;
+  }
+
+  .loading {
+    border-color: #ffe600;
+  }
+
+  .error {
+    border-color: #ff0000;
   }
 </style>
