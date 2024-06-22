@@ -6,8 +6,11 @@
     playlist,
     selectPlaylist,
     type dbPlaylist,
+    addPlaylist,
   } from "../store/playlist";
   import AddPlaylist from "./AddPlaylist.svelte";
+  import MdRefresh from "svelte-icons/md/MdRefresh.svelte";
+
   import { currentTab } from "../store/tabs";
 
   onMount(() => {
@@ -16,7 +19,7 @@
 
   let adding = false;
 
-  const addPlaylist = () => {
+  const openModal = () => {
     adding = true;
   };
   const closeModal = () => {
@@ -34,7 +37,7 @@
 </script>
 
 <div class="grid">
-  <div class="card add" on:click={addPlaylist}>+</div>
+  <div class="card add" on:click={openModal}>+</div>
   {#if adding}
     <AddPlaylist
       on:close={closeModal}
@@ -45,7 +48,18 @@
     />
   {/if}
   {#each $playlistLibrary as playlist}
-    <div class="card playlist" on:click={() => choosePlaylist(playlist)}>
+    <div
+      class="card playlist"
+      on:click={() => choosePlaylist(playlist)}
+      on:keydown={() => {}}
+    >
+      <button
+        class="refresh"
+        on:click={(e) => {
+          e.preventDefault();
+          addPlaylist(playlist.url);
+        }}><MdRefresh /></button
+      >
       <img src={playlist.thumbnail} alt={playlist.title} />
       <div class="playlist-title">{playlist.title}</div>
       <div class="playlist-description">{playlist.description}</div>
@@ -70,6 +84,7 @@
   }
 
   .card {
+    position: relative;
     border: 1px solid black;
     border-radius: 5px;
     margin: 5px;
@@ -95,5 +110,20 @@
     height: auto;
     aspect-ratio: 1/1;
     object-fit: cover;
+  }
+
+  .refresh {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #aaa;
+    border: 1 px solid black;
+    cursor: pointer;
+    border-radius: 50%;
+    padding: 0;
+    height: 30px;
+    width: 30px;
+    align-self: center;
+    justify-self: center;
   }
 </style>
