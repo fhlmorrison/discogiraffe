@@ -4,6 +4,7 @@ import { readDir } from "@tauri-apps/api/fs";
 import type { FileEntry } from "@tauri-apps/api/fs";
 import { basename } from "@tauri-apps/api/path";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
+import type { dbPlaylistFull } from "src/store/playlist";
 
 const allowedTypes = ["mp3"];
 
@@ -83,6 +84,13 @@ export async function loadSongsFromPath(files: string[]) {
     })
   );
   return songs;
+}
+
+export async function loadSongsFromPlaylist(playlist: dbPlaylistFull) {
+  const localSongs = playlist.songs
+    .filter((song) => song.path)
+    .map((song) => song.path);
+  return await loadSongsFromPath(localSongs);
 }
 
 export async function getMetadata(src: string) {

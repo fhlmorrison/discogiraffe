@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { open } from "@tauri-apps/api/dialog";
   import { settings } from "./../store/settings";
   import type { dbSong } from "../store/playlist";
   import PlaylistItem from "./PlaylistItem.svelte";
@@ -7,7 +8,8 @@
   import { mapWithConcurrency } from "./concurrentMap.js";
   import { downloadDir } from "@tauri-apps/api/path";
   import { openFiles } from "../store/files";
-  import { loadSongsFromPath } from "./loadAssets";
+  import { loadSongsFromPath, loadSongsFromPlaylist } from "./loadAssets";
+  import { currentTab } from "../store/tabs";
 
   //TODO: Add shift click multi select
   console.log("Playlist", $playlist);
@@ -51,6 +53,12 @@
       }
     );
   };
+
+  const openDownloaded = async () => {
+    openFiles.set(await loadSongsFromPlaylist($playlist));
+    // Open reader tab
+    currentTab.select("/songreader");
+  };
 </script>
 
 {#if $playlist}
@@ -68,6 +76,7 @@
         >Download Selected</button
       >
     {/await}
+    <button class="open" on:click={openDownloaded}>Open Songs</button>
     <button on:click={initSelected}>Deselect All</button>
     <button on:click={selectAll}>Select All</button>
   </div>
@@ -94,6 +103,18 @@
     background-color: #4caf50;
     border: none;
     color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-right: auto;
+  }
+
+  .open {
+    /* background-color: #4caf50; */
+    /* color: white; */
+    /* border: none; */
     padding: 10px 20px;
     text-align: center;
     text-decoration: none;
