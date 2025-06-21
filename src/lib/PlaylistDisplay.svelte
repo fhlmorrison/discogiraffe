@@ -9,7 +9,7 @@
   import { downloadDir } from "@tauri-apps/api/path";
   import { openFiles } from "../store/files";
   import { loadSongsFromPath, loadSongsFromPlaylist } from "./loadAssets";
-  import { currentTab } from "../store/tabs";
+  import { tabStore } from "../store/tabs.svelte";
 
   //TODO: Add shift click multi select
   console.log("Playlist", $playlist);
@@ -45,7 +45,7 @@
         // Open the newly downloaded files in song reader
         openFiles.set(await loadSongsFromPath(results));
         // TODO: open reader tab
-        currentTab.select("/songreader");
+        tabStore.select("/songreader");
       }
     );
   };
@@ -53,7 +53,7 @@
   const openDownloaded = async () => {
     openFiles.set(await loadSongsFromPlaylist($playlist));
     // Open reader tab
-    currentTab.select("/songreader");
+    tabStore.select("/songreader");
   };
 
   $effect.pre(() => {

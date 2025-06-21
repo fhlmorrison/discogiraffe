@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { currentTab } from "./store/tabs";
+  import { tabStore } from "./store/tabs.svelte";
   import Settings from "./lib/Settings.svelte";
   import SongPlayer from "./lib/SongPlayer.svelte";
   import NavButtons from "./lib/NavButtons.svelte";
 
-  const SvelteComponent = $derived($currentTab.component);
+  const SvelteComponent = $derived(tabStore.current.component);
 </script>
 
 <header>

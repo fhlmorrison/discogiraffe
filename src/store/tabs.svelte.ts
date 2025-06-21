@@ -1,4 +1,3 @@
-import { writable } from "svelte/store";
 import PlaylistDisplay from "../lib/PlaylistDisplay.svelte";
 import MetaDataReader from "../lib/SongReader.svelte";
 import PlaylistLibrary from "../lib/PlaylistLibrary.svelte";
@@ -27,14 +26,20 @@ export type Route = {
   component: any;
 };
 
-const { subscribe, set } = writable<Route>(routes[0]);
-export const currentTab = {
-  subscribe,
-  set,
-  select: (path: string) => {
+interface TabStore {
+  current: Route;
+  select: (path: string) => void;
+}
+
+class TabStoreCLass implements TabStore {
+  current: Route = $state(routes[0]);
+
+  select(path: string) {
     const route = routes.find((r) => r.path === path);
     if (route) {
-      set(route);
+      this.current = route;
     }
-  },
-};
+  }
+}
+
+export const tabStore = new TabStoreCLass();

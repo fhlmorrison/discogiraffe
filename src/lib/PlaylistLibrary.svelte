@@ -10,7 +10,7 @@
   import AddPlaylist from "./AddPlaylist.svelte";
   import MdRefresh from "svelte-icons/md/MdRefresh.svelte";
 
-  import { currentTab } from "../store/tabs";
+  import { tabStore } from "../store/tabs.svelte";
 
   let refreshPromise = $state<Promise<void> | undefined>();
 
@@ -30,7 +30,7 @@
     console.log("selected", selectedPlaylist);
     selectPlaylist(selectedPlaylist.id);
     // Open playlist list view
-    currentTab.select("/playlist");
+    tabStore.select("/playlist");
   };
   const loadList = () => {
     loadPlaylists();

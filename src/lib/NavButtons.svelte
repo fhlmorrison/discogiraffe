@@ -1,14 +1,14 @@
 <script lang="ts">
-  import { currentTab, routes } from "../store/tabs";
-  currentTab.set(routes[0]);
+  import { tabStore, routes } from "../store/tabs.svelte";
+  $inspect(tabStore.current);
 </script>
 
 <div>
   {#each routes as route}
     <button
-      class={route === $currentTab ? "active" : ""}
+      class={route.name === tabStore.current.name ? "active" : ""}
       onclick={() => {
-        currentTab.set(route);
+        tabStore.current = route;
       }}>{route.name}</button
     >
   {/each}
