@@ -6,7 +6,7 @@
   import FaPauseCircle from "svelte-icons/fa/FaPauseCircle.svelte";
   import FaVolumeUp from "svelte-icons/fa/FaVolumeUp.svelte";
   import { settingsStore } from "../store/settings.svelte";
-  import { openFiles, selectedIndex } from "../store/files";
+  import { openFileStore } from "../store/files.svelte";
   // import { currentTime } from "./../store/player";
   let time = $state(0);
   let audioPlayer: HTMLAudioElement | undefined = $state();
@@ -15,7 +15,7 @@
   // let currentTime = 0;
   let duration = $state(0);
   let volume = $state(0.75);
-  let url = $derived($openFiles[$selectedIndex]?.url ?? "");
+  let url = $derived(openFileStore.selectedFile?.url ?? "");
   let paused = $state(true);
   let progressElement: HTMLDivElement | undefined = $state();
 
@@ -38,7 +38,7 @@
   };
 
   const prev = () => {
-    openFiles.prev();
+    openFileStore.prev();
     if (settingsStore.settings["autoPlay"]) {
       setTimeout(() => {
         audioPlayer?.play();
@@ -47,7 +47,7 @@
   };
 
   const next = () => {
-    openFiles.next();
+    openFileStore.next();
     if (settingsStore.settings["autoPlay"]) {
       setTimeout(() => {
         audioPlayer?.play();

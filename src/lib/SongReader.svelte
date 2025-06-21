@@ -2,31 +2,26 @@
   import SongListItem from "./SongListItem.svelte";
   import MetaDataViewer from "./MetaDataViewer.svelte";
   import { change_filename, loadSongsFromFolder } from "./loadAssets";
-  import { selectedIndex, openFiles } from "../store/files";
+  import { openFileStore } from "../store/files.svelte";
 
   // let openFiles: OpenFileEntry[];
 
   const openFolder = () =>
     loadSongsFromFolder().then((res) => {
       console.log(res);
-      $openFiles = res || [];
+      openFileStore.openFiles = res || [];
     });
 
   const saveSongs = () => {
-    openFiles.save();
+    openFileStore.save();
   };
 
-  let selectedFile = $derived($openFiles[$selectedIndex]);
-
   const selectSong = (index: number) => {
-    openFiles.select(index);
+    openFileStore.select(index);
   };
 
   const changeFilename = (fileName: string) => {
-    change_filename(selectedFile.path, fileName).then((resultingPath) => {
-      console.log(`"${selectedFile.name}"\nrenamed to\n"${fileName}"`);
-      openFiles.rename($selectedIndex, fileName, resultingPath);
-    });
+    openFileStore.renameSelected(fileName);
   };
 </script>
 
@@ -34,19 +29,22 @@
   <div class="row">
     <div>
       <button onclick={openFolder}>Open Folder</button>
-      {#if $openFiles && $openFiles.length > 0}
+      {#if openFileStore.openFiles && openFileStore.openFiles.length > 0}
         <button onclick={saveSongs}>Save songs to db</button>
       {/if}
     </div>
   </div>
 
-  <MetaDataViewer song={selectedFile} onChangeFilename={changeFilename} />
+  <MetaDataViewer
+    song={openFileStore.selectedFile}
+    onChangeFilename={changeFilename}
+  />
 </div>
 
-{#if openFiles}
+{#if openFileStore.openFiles && openFileStore.openFiles.length > 0}
   <div class="list">
     <ol>
-      {#each $openFiles as file, i}
+      {#each openFileStore.openFiles as file, i}
         <SongListItem
           song={file}
           index={i}

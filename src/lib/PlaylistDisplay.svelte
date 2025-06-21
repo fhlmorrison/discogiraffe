@@ -6,7 +6,7 @@
   import { playlistStore } from "../store/playlist.svelte";
   import { mapWithConcurrency } from "./concurrentMap.js";
   import { downloadDir } from "@tauri-apps/api/path";
-  import { openFiles } from "../store/files";
+  import { openFileStore } from "../store/files.svelte";
   import { loadSongsFromPath, loadSongsFromPlaylist } from "./loadAssets";
   import { tabStore } from "../store/tabs.svelte";
 
@@ -45,7 +45,7 @@
       async (results) => {
         console.log(results);
         // Open the newly downloaded files in song reader
-        openFiles.set(await loadSongsFromPath(results));
+        openFileStore.openFiles = (await loadSongsFromPath(results)) ?? [];
         // TODO: open reader tab
         tabStore.select("/songreader");
       }
@@ -53,7 +53,8 @@
   };
 
   const openDownloaded = async () => {
-    openFiles.set(await loadSongsFromPlaylist(playlistStore.playlist));
+    openFileStore.openFiles =
+      (await loadSongsFromPlaylist(playlistStore.playlist)) ?? [];
     // Open reader tab
     tabStore.select("/songreader");
   };

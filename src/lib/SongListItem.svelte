@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { OpenFileEntry } from "../store/files";
+  import type { OpenFileEntry } from "../store/files.svelte";
   interface Props {
     song: OpenFileEntry;
     index: number;

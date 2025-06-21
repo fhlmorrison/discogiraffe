@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { MetadataEntry } from "./loadAssets";
   import { getMetadata, getPictureData, writeMetadata } from "./loadAssets";
-  import type { OpenFileEntry } from "../store/files";
+  import type { OpenFileEntry } from "../store/files.svelte";
 
   interface Props {
     song: OpenFileEntry;
