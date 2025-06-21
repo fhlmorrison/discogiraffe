@@ -1,10 +1,10 @@
 <script lang="ts">
   // import { open } from "@tauri-apps/plugin-dialog";
   import { settings } from "./../store/settings";
-  import type { dbSong } from "../store/playlist";
+  import type { dbSong } from "../store/playlist.svelte";
   import PlaylistItem from "./PlaylistItem.svelte";
   import { invoke } from "@tauri-apps/api/core";
-  import { playlist } from "../store/playlist";
+  import { playlistStore } from "../store/playlist.svelte";
   import { mapWithConcurrency } from "./concurrentMap.js";
   import { downloadDir } from "@tauri-apps/api/path";
   import { openFiles } from "../store/files";
@@ -12,7 +12,6 @@
   import { tabStore } from "../store/tabs.svelte";
 
   //TODO: Add shift click multi select
-  console.log("Playlist", $playlist);
 
   let downloadDirPath: string;
 
@@ -21,14 +20,17 @@
   const setDownloadDir = async (option?: string) =>
     (downloadDirPath = option || (await downloadDir()));
 
-  let selected: boolean[] = $state($playlist?.songs.map((item) => false));
+  let selected: boolean[] = $state(
+    playlistStore.playlist?.songs.map((item) => false) ?? []
+  );
 
   const initSelected = () => {
-    selected = $playlist?.songs.map((item) => false);
+    selected = playlistStore.playlist?.songs.map((item) => false) ?? [];
   };
 
   const selectAll = () => {
-    selected = $playlist?.songs.map((item) => !item.downloaded);
+    selected =
+      playlistStore.playlist?.songs.map((item) => !item.downloaded) ?? [];
   };
 
   const download = async (item: dbSong): Promise<string> =>
@@ -38,7 +40,8 @@
     });
 
   const downloadSelected = () => {
-    const selectedItems = $playlist?.songs.filter((item, i) => selected[i]);
+    const selectedItems =
+      playlistStore.playlist?.songs.filter((item, i) => selected[i]) ?? [];
     downloadPromise = mapWithConcurrency(selectedItems, download).then(
       async (results) => {
         console.log(results);
@@ -51,20 +54,20 @@
   };
 
   const openDownloaded = async () => {
-    openFiles.set(await loadSongsFromPlaylist($playlist));
+    openFiles.set(await loadSongsFromPlaylist(playlistStore.playlist));
     // Open reader tab
     tabStore.select("/songreader");
   };
 
   $effect.pre(() => {
     setDownloadDir($settings?.downloadPath);
-    if ($playlist) {
+    if (playlistStore.playlist) {
       initSelected();
     }
   });
 </script>
 
-{#if $playlist}
+{#if playlistStore.playlist}
   <div class="button-row">
     {#await downloadPromise}
       <button class="download loading" disabled onclick={downloadSelected}
@@ -84,7 +87,7 @@
     <button onclick={selectAll}>Select All</button>
   </div>
   <div class="list">
-    {#each $playlist.songs as item, i}
+    {#each playlistStore.playlist.songs as item, i}
       <PlaylistItem {item} bind:selected={selected[i]} />
     {/each}
   </div>

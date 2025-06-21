@@ -1,5 +1,4 @@
 import { invoke } from "@tauri-apps/api/core";
-import { writable } from "svelte/store";
 
 type Thumbnail = {
   height: number;
@@ -97,25 +96,19 @@ export async function addPlaylist(url: string) {
   return result;
 }
 
-export async function loadPlaylists() {
+async function loadPlaylists() {
   const playlists = await invoke<dbPlaylist[]>("load_playlists");
-  playlistLibrary.set(playlists);
-  // console.log(playlists);
   return playlists;
 }
 
-export async function loadPlaylist(id: string) {
+async function loadPlaylist(id: string) {
   const data = await invoke<dbPlaylistFull>("load_playlist", { id });
-  console.log(data);
   return data;
 }
 
 export async function deletePlaylist(id: string) {
+  console.log("PLAYLIST DELETION NOT IMPLEMENTED");
   // TODO
-}
-
-export async function selectPlaylist(id: string) {
-  playlist.set(await loadPlaylist(id));
 }
 
 const URL_FORMAT = "https://www.youtube.com/playlist?list=";
@@ -125,10 +118,42 @@ export async function getYTPlaylist(url: string) {
     // Error
     return;
   }
-  playlist.set(await invoke<dbPlaylistFull>("get_playlist_info", { url }));
-  return true;
+  return await invoke<dbPlaylistFull>("get_playlist_info", { url });
 }
 
-export const playlist = writable<dbPlaylistFull>();
+interface PlaylistStore {
+  playlist: dbPlaylistFull | undefined;
+  playlistLibrary: dbPlaylist[];
+  // savePlaylist: (playlist: dbPlaylistFull) => Promise<void>;
+  // addPlaylist: (url: string) => Promise<void>;
+  loadPlaylists: () => Promise<void>;
+  // loadPlaylist: (id: string) => Promise<dbPlaylistFull>;
+  deletePlaylist: (id: string) => Promise<void>;
+  selectPlaylist: (id: string) => Promise<void>;
+  getYTPlaylist: (url: string) => Promise<boolean | undefined>;
+}
 
-export const playlistLibrary = writable<dbPlaylist[]>([]);
+class PlaylistStoreClass implements PlaylistStore {
+  playlist = $state<dbPlaylistFull | undefined>();
+  playlistLibrary = $state<dbPlaylist[]>([]);
+
+  loadPlaylists = async () => {
+    this.playlistLibrary = await loadPlaylists();
+  };
+
+  deletePlaylist = deletePlaylist;
+
+  selectPlaylist = async (id: string) => {
+    this.playlist = await loadPlaylist(id);
+  };
+
+  getYTPlaylist = async (url: string) => {
+    const result = await getYTPlaylist(url);
+    if (result) {
+      this.playlist = result;
+    }
+    return result !== undefined;
+  };
+}
+
+export const playlistStore = new PlaylistStoreClass();

@@ -1,12 +1,10 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import {
-    loadPlaylists,
-    playlistLibrary,
-    selectPlaylist,
     type dbPlaylist,
     addPlaylist,
-  } from "../store/playlist";
+    playlistStore,
+  } from "../store/playlist.svelte";
   import AddPlaylist from "./AddPlaylist.svelte";
   import MdRefresh from "svelte-icons/md/MdRefresh.svelte";
 
@@ -28,19 +26,19 @@
   };
   const choosePlaylist = (selectedPlaylist: dbPlaylist) => {
     console.log("selected", selectedPlaylist);
-    selectPlaylist(selectedPlaylist.id);
+    playlistStore.selectPlaylist(selectedPlaylist.id);
     // Open playlist list view
     tabStore.select("/playlist");
   };
   const loadList = () => {
-    loadPlaylists();
+    playlistStore.loadPlaylists();
     console.log("loaded");
   };
   const refreshPlaylist = async (pl: dbPlaylist) => {
     refreshPromise = addPlaylist(pl.url);
     refreshPromise
       .then(() => {
-        loadPlaylists().then(() => {
+        playlistStore.loadPlaylists().then(() => {
           console.log("loaded");
         });
       })
@@ -61,7 +59,7 @@
       }}
     />
   {/if}
-  {#each $playlistLibrary as playlist}
+  {#each playlistStore.playlistLibrary as playlist}
     <div
       class="card playlist"
       onclick={() => choosePlaylist(playlist)}
@@ -101,7 +99,7 @@
       <div class="playlist-description">{playlist.description}</div>
     </div>
   {/each}
-  {#if !$playlistLibrary.length}
+  {#if !playlistStore.playlistLibrary.length}
     <div class="card playlist">
       <img src={"/record.png"} alt={"test image"} />
       <div class="playlist-title">{"Example Playlist"}</div>

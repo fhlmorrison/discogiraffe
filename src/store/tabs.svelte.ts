@@ -34,12 +34,12 @@ interface TabStore {
 class TabStoreCLass implements TabStore {
   current: Route = $state(routes[0]);
 
-  select(path: string) {
+  select = (path: string) => {
     const route = routes.find((r) => r.path === path);
     if (route) {
       this.current = route;
     }
-  }
+  };
 }
 
 export const tabStore = new TabStoreCLass();

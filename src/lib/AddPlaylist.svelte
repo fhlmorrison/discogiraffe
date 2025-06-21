@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { addPlaylist } from "../store/playlist";
+  import { addPlaylist } from "../store/playlist.svelte";
 
   let url = $state("");
   let errorMessage = $state("");

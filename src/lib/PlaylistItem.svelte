@@ -1,6 +1,6 @@
 <script lang="ts">
   import FaPlay from "svelte-icons/fa/FaPlay.svelte";
-  import type { dbSong } from "../store/playlist";
+  import type { dbSong } from "../store/playlist.svelte";
 
   interface Props {
     item: dbSong;
