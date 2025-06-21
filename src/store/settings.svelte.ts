@@ -1,4 +1,3 @@
-import { get, writable } from "svelte/store";
 import {
   BaseDirectory,
   exists,
@@ -82,43 +81,42 @@ type Settings = {
   autoPlay: boolean;
 };
 
-const { subscribe, set, update } = writable<Settings>(
-  Object.fromEntries(settingList.map((e) => [e.key, e.default])) as Settings
-);
+interface SettingsStore {
+  settings: Settings;
+  load: () => Promise<void>;
+  save: () => Promise<void>;
+}
 
-const load = async () => {
-  // Check if settings file exists
-  if (!(await exists("settings.json", { baseDir: BaseDirectory.AppData }))) {
-    console.log("Settings file does not exist");
-    return {};
-  }
-  // Read settings file
-  const settingsFile = await readTextFile("settings.json", {
-    baseDir: BaseDirectory.AppData,
-  });
-  // Parse settings file
-  const settingsObject = JSON.parse(settingsFile) as Settings;
-  set(settingsObject);
-};
-const save = async () => {
-  // Get settings
-  const settingsToWrite = get(settings);
-  // Convert to string
-  const settingsToWriteString = JSON.stringify(settingsToWrite);
-  // Write to settings file
-  await writeTextFile("settings.json", settingsToWriteString, {
-    baseDir: BaseDirectory.AppData,
-  });
-};
+class SettingsStoreClass implements SettingsStore {
+  settings = Object.fromEntries(
+    settingList.map((e) => [e.key, e.default])
+  ) as Settings;
 
-const getValue = (e: SettingEntry) => {
-  return get(settings)[e.key] ?? e.default;
-};
+  load = async () => {
+    // Check if settings file exists
+    if (!(await exists("settings.json", { baseDir: BaseDirectory.AppData }))) {
+      console.log("Settings file does not exist");
+      return;
+    }
+    // Read settings file
+    const settingsFile = await readTextFile("settings.json", {
+      baseDir: BaseDirectory.AppData,
+    });
+    // Parse settings file
+    const settingsObject = JSON.parse(settingsFile) as Settings;
+    this.settings = settingsObject;
+  };
 
-export const settings = {
-  subscribe,
-  set,
-  update,
-  load,
-  save,
-};
+  save = async () => {
+    // Get settings
+    const settingsToWrite = this.settings;
+    // Convert to string
+    const settingsToWriteString = JSON.stringify(settingsToWrite);
+    // Write to settings file
+    await writeTextFile("settings.json", settingsToWriteString, {
+      baseDir: BaseDirectory.AppData,
+    });
+  };
+}
+
+export const settingsStore = new SettingsStoreClass();

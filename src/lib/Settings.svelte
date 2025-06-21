@@ -1,24 +1,20 @@
 <script lang="ts">
   import SettingEntry from "./SettingEntry.svelte";
-  import { settings, settingList } from "../store/settings";
+  import { settingsStore, settingList } from "../store/settings.svelte";
   import FaCog from "svelte-icons/fa/FaCog.svelte";
   import { onMount } from "svelte";
 
-  let values = $state({ ...$settings });
-
   onMount(() => {
-    settings.load();
+    settingsStore.load();
   });
 
   let modalOpen = $state(false);
   const closeModal = () => {
     modalOpen = false;
-    values = { ...$settings };
   };
 
   const saveChanges = () => {
-    settings.set(values);
-    settings.save();
+    settingsStore.save();
     console.log("saved settings");
   };
 </script>
@@ -36,7 +32,10 @@
   <div class="modal-content">
     <h1>Settings</h1>
     {#each settingList as setting}
-      <SettingEntry entry={setting} bind:value={values[setting.key]} />
+      <SettingEntry
+        entry={setting}
+        bind:value={settingsStore.settings[setting.key]}
+      />
     {/each}
     <button class="close" onclick={closeModal}>Close</button>
     <button class="save" onclick={saveChanges}>Save</button>

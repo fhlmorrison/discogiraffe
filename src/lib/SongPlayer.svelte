@@ -5,7 +5,7 @@
   import FaPlayCircle from "svelte-icons/fa/FaPlayCircle.svelte";
   import FaPauseCircle from "svelte-icons/fa/FaPauseCircle.svelte";
   import FaVolumeUp from "svelte-icons/fa/FaVolumeUp.svelte";
-  import { settings } from "../store/settings";
+  import { settingsStore } from "../store/settings.svelte";
   import { openFiles, selectedIndex } from "../store/files";
   // import { currentTime } from "./../store/player";
   let time = $state(0);
@@ -39,7 +39,7 @@
 
   const prev = () => {
     openFiles.prev();
-    if ($settings["autoPlay"]) {
+    if (settingsStore.settings["autoPlay"]) {
       setTimeout(() => {
         audioPlayer?.play();
       }, 100);
@@ -48,7 +48,7 @@
 
   const next = () => {
     openFiles.next();
-    if ($settings["autoPlay"]) {
+    if (settingsStore.settings["autoPlay"]) {
       setTimeout(() => {
         audioPlayer?.play();
       }, 100);
@@ -56,7 +56,7 @@
   };
 
   const songEnded = () => {
-    if ($settings["autoPlay"]) {
+    if (settingsStore.settings["autoPlay"]) {
       next();
     }
   };

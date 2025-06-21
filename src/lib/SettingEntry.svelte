@@ -1,7 +1,5 @@
 <script lang="ts">
-  import { settings } from "./../store/settings";
-  import type { SettingEntry } from "../store/settings";
-  import { onMount } from "svelte";
+  import type { SettingEntry } from "../store/settings.svelte";
   import { openFolder } from "./loadAssets";
   interface Props {
     entry: SettingEntry;
@@ -9,11 +7,6 @@
   }
 
   let { entry, value = $bindable() }: Props = $props();
-  const getValue = (e: SettingEntry) => {
-    value = $settings[e.key] ?? e.default;
-  };
-  //   $: getValue(entry);
-  onMount(() => getValue(entry));
   const chooseFolder = async () => {
     value = await openFolder();
   };

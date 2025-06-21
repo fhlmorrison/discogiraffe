@@ -1,6 +1,5 @@
 <script lang="ts">
-  // import { open } from "@tauri-apps/plugin-dialog";
-  import { settings } from "./../store/settings";
+  import { settingsStore } from "./../store/settings.svelte";
   import type { dbSong } from "../store/playlist.svelte";
   import PlaylistItem from "./PlaylistItem.svelte";
   import { invoke } from "@tauri-apps/api/core";
@@ -60,7 +59,7 @@
   };
 
   $effect.pre(() => {
-    setDownloadDir($settings?.downloadPath);
+    setDownloadDir(settingsStore.settings.downloadPath);
     if (playlistStore.playlist) {
       initSelected();
     }
