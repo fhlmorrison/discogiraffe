@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { run } from "svelte/legacy";
-
   import type { MetadataEntry } from "./loadAssets";
   import { getMetadata, getPictureData, writeMetadata } from "./loadAssets";
   import type { OpenFileEntry } from "../store/files";
@@ -94,16 +92,10 @@
   const changeFilename = () => {
     onChangeFilename(fileName);
   };
-  run(() => {
+  $effect.pre(() => {
     setFilename(song?.name);
-  });
-  run(() => {
     loadMetadata(song?.path);
-  });
-  run(() => {
     song && getPicture();
-  });
-  run(() => {
     fileName = fileName.replace(/[<>:/\\\|\?"\*\^]/g, "");
   });
 </script>

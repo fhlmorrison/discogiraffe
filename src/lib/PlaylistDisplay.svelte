@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { run } from "svelte/legacy";
-
   // import { open } from "@tauri-apps/plugin-dialog";
   import { settings } from "./../store/settings";
   import type { dbSong } from "../store/playlist";
@@ -57,10 +55,9 @@
     // Open reader tab
     currentTab.select("/songreader");
   };
-  run(() => {
+
+  $effect.pre(() => {
     setDownloadDir($settings?.downloadPath);
-  });
-  run(() => {
     if ($playlist) {
       initSelected();
     }

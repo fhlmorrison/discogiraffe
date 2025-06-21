@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { run } from "svelte/legacy";
-
   // ignore this
   import FaStepBackward from "svelte-icons/fa/FaStepBackward.svelte";
   import FaStepForward from "svelte-icons/fa/FaStepForward.svelte";
@@ -17,14 +15,9 @@
   // let currentTime = 0;
   let duration = $state(0);
   let volume = $state(0.75);
-  run(() => {
-    console.log("Volume:", volume);
-  });
-  let paused = $state(true);
-
-  let progressElement: HTMLDivElement | undefined = $state();
-
   let url = $derived($openFiles[$selectedIndex]?.url ?? "");
+  let paused = $state(true);
+  let progressElement: HTMLDivElement | undefined = $state();
 
   const cleanTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
@@ -42,9 +35,6 @@
     const percent = x / rect.width;
     audioPlayer.currentTime = percent * duration;
   };
-  run(() => {
-    url && (paused = true);
-  });
 
   const prev = () => {
     openFiles.prev();
