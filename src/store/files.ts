@@ -1,9 +1,7 @@
-import { invoke } from "@tauri-apps/api";
-import type { FileEntry } from "@tauri-apps/api/fs";
-import { convertFileSrc } from "@tauri-apps/api/tauri";
+import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { get, writable } from "svelte/store";
 
-export type OpenFileEntry = FileEntry & { url: string };
+export type OpenFileEntry = { name: string; path: string; url: string };
 
 const { subscribe, set, update } = writable<OpenFileEntry[]>([]);
 

@@ -1,5 +1,5 @@
 use rusqlite::{params, Connection, Result};
-use tauri::AppHandle;
+use tauri::{AppHandle, Manager};
 
 use crate::songs::{MetadataKey, WriteMetadataEvent};
 use crate::utils::CommandError;
@@ -51,7 +51,7 @@ pub struct AppState {
 
 pub fn init_db(handle: &AppHandle) -> Result<Connection> {
     let dir = handle
-        .path_resolver()
+        .path()
         .app_data_dir()
         .expect("failed to get config dir");
 

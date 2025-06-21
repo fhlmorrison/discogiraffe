@@ -35,7 +35,7 @@ async fn download_song(
     let channel = song.channel.unwrap_or("".to_string());
     // return ytdl::download_song(url, download_path);
 
-    match ytdl::download_song(url, download_path) {
+    match ytdl::download_song(&handle, url, download_path).await {
         Ok(path) => {
             match handle.db(|db| database::add_local_song(db, &path, &url)) {
                 Ok(_) => {
@@ -110,13 +110,16 @@ fn save_local_song(app: &tauri::AppHandle, file: &str) -> Result<(), CommandErro
 }
 
 #[tauri::command]
-async fn get_playlist_info(url: &str) -> Result<database::DbPlaylistFull, CommandError> {
-    return ytdl::get_playlist_info(url);
+async fn get_playlist_info(
+    handle: AppHandle,
+    url: &str,
+) -> Result<database::DbPlaylistFull, CommandError> {
+    return ytdl::get_playlist_info(&handle, url).await;
 }
 
 #[tauri::command]
 async fn add_playlist(handle: AppHandle, url: &str) -> Result<(), CommandError> {
-    let playlist = ytdl::get_playlist_info(url)?;
+    let playlist = ytdl::get_playlist_info(&handle, url).await?;
     return handle.db(|conn| database::add_playlist(conn, playlist));
 }
 
@@ -130,6 +133,7 @@ async fn load_playlist(
 
 #[tauri::command]
 async fn load_playlists(handle: AppHandle) -> Result<Vec<database::DbPlaylist>, CommandError> {
+    println!("Loading playlists from database");
     return handle.db(|conn| database::get_playlists(conn));
 }
 
@@ -176,6 +180,9 @@ async fn change_filename(
 
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_dialog::init())
         .manage(database::AppState {
             db: Default::default(),
         })

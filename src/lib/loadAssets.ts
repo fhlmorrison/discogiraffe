@@ -1,10 +1,12 @@
-import { invoke } from "@tauri-apps/api";
-import { open } from "@tauri-apps/api/dialog";
-import { readDir } from "@tauri-apps/api/fs";
-import type { FileEntry } from "@tauri-apps/api/fs";
-import { basename } from "@tauri-apps/api/path";
-import { convertFileSrc } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
+import { open } from "@tauri-apps/plugin-dialog";
+import { readDir } from "@tauri-apps/plugin-fs";
+import type { DirEntry } from "@tauri-apps/plugin-fs";
+import { basename, join } from "@tauri-apps/api/path";
+import { convertFileSrc } from "@tauri-apps/api/core";
 import type { dbPlaylistFull } from "src/store/playlist";
+
+type SongEntry = DirEntry & { path: string };
 
 const allowedTypes = ["mp3"];
 
@@ -38,21 +40,19 @@ export async function openFolder() {
 }
 
 // Mutual recursion to get all files in a folder
-const processEntries = (entries: FileEntry[]): FileEntry[] =>
-  entries.flatMap((entry) => processEntry(entry));
-const processEntry = ({
-  children = [],
-  name,
-  path,
-}: FileEntry): FileEntry[] => [{ name, path }, ...processEntries(children)];
+const processEntries = async (dirPath: string, entries: DirEntry[]) =>
+  await Promise.all(
+    entries.flatMap(async (entry) => ({
+      ...entry,
+      path: await join(dirPath, entry.name),
+    }))
+  );
 
 export async function loadAssetsFromFolder() {
-  const paths = arrayify(await openFolder());
-  if (paths === undefined) return;
-  const entries = (
-    await Promise.all(paths.map((p) => readDir(p, { recursive: true })))
-  ).flat();
-  const files = processEntries(entries);
+  const dirPath = await openFolder();
+  if (dirPath === undefined) return;
+  const entries = await readDir(dirPath);
+  const files = await processEntries(dirPath, entries);
   return files.filter(({ name }) =>
     allowedTypes.some((type) => name.endsWith(type))
   );

@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { open } from "@tauri-apps/api/dialog";
+  // import { open } from "@tauri-apps/plugin-dialog";
   import { settings } from "./../store/settings";
   import type { dbSong } from "../store/playlist";
   import PlaylistItem from "./PlaylistItem.svelte";
-  import { invoke } from "@tauri-apps/api/tauri";
+  import { invoke } from "@tauri-apps/api/core";
   import { playlist } from "../store/playlist";
   import { mapWithConcurrency } from "./concurrentMap.js";
   import { downloadDir } from "@tauri-apps/api/path";

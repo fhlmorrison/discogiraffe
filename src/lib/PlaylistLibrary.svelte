@@ -3,7 +3,6 @@
   import {
     loadPlaylists,
     playlistLibrary,
-    playlist,
     selectPlaylist,
     type dbPlaylist,
     addPlaylist,

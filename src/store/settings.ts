@@ -4,7 +4,7 @@ import {
   exists,
   readTextFile,
   writeTextFile,
-} from "@tauri-apps/api/fs";
+} from "@tauri-apps/plugin-fs";
 
 type SettingValue = string | number | boolean;
 
@@ -87,13 +87,13 @@ const { subscribe, set, update } = writable<Settings>({});
 
 const load = async () => {
   // Check if settings file exists
-  if (!(await exists("settings.json", { dir: BaseDirectory.AppData }))) {
+  if (!(await exists("settings.json", { baseDir: BaseDirectory.AppData }))) {
     console.log("Settings file does not exist");
     return {};
   }
   // Read settings file
   const settingsFile = await readTextFile("settings.json", {
-    dir: BaseDirectory.AppData,
+    baseDir: BaseDirectory.AppData,
   });
   // Parse settings file
   const settingsObject = JSON.parse(settingsFile) as Settings;
@@ -106,7 +106,7 @@ const save = async () => {
   const settingsToWriteString = JSON.stringify(settingsToWrite);
   // Write to settings file
   await writeTextFile("settings.json", settingsToWriteString, {
-    dir: BaseDirectory.AppData,
+    baseDir: BaseDirectory.AppData,
   });
 };
 

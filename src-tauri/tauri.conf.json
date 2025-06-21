@@ -2,76 +2,49 @@
   "build": {
     "beforeDevCommand": "pnpm dev",
     "beforeBuildCommand": "pnpm build",
-    "devPath": "http://localhost:1420",
-    "distDir": "../dist",
-    "withGlobalTauri": false
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:1420"
   },
-  "package": {
-    "productName": "discogiraffe",
-    "version": "0.0.0"
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
   },
-  "tauri": {
-    "allowlist": {
-      "protocol": {
-        "all": false,
-        "asset": true,
-        "assetScope": {
-          "allow": ["**"]
-        }
-      },
-      "fs": {
-        "all": false,
-        "copyFile": false,
-        "createDir": false,
-        "exists": true,
-        "readDir": true,
-        "readFile": true,
-        "removeDir": false,
-        "removeFile": false,
-        "renameFile": false,
-        "scope": ["$APPDATA/*"],
-        "writeFile": true
-      },
-      "dialog": {
-        "all": false,
-        "ask": false,
-        "confirm": false,
-        "message": false,
-        "open": true,
-        "save": false
-      },
-      "path": {
-        "all": true
-      },
-      "all": false,
-      "shell": {
-        "all": false,
-        "open": true
-      }
-    },
-    "bundle": {
-      "active": true,
-      "targets": "all",
-      "identifier": "com.discogiraffe.app",
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ]
-    },
-    "security": {
-      "csp": "default-src 'self'; img-src 'self' asset: https://asset.localhost data: https://i.ytimg.com; media-src 'self' asset: https://asset.localhost; style-src 'unsafe-inline' *"
-    },
+  "productName": "discogiraffe",
+  "mainBinaryName": "discogiraffe",
+  "version": "0.0.0",
+  "identifier": "com.discogiraffe.app",
+  "plugins": {},
+  "app": {
+    "withGlobalTauri": false,
     "windows": [
       {
         "fullscreen": false,
         "resizable": true,
         "title": "DiscoGiraffe",
         "width": 800,
-        "height": 600
+        "height": 600,
+        "useHttpsScheme": true
       }
-    ]
+    ],
+    "security": {
+      "assetProtocol": {
+        "scope": {
+          "allow": [
+            "**"
+          ],
+          "deny": [],
+          "requireLiteralLeadingDot": null
+        },
+        "enable": true
+      },
+      "csp": "default-src 'self'; img-src 'self' asset: https://asset.localhost data: https://i.ytimg.com; media-src 'self' asset: https://asset.localhost; style-src 'unsafe-inline' *; connect-src ipc: http://ipc.localhost"
+    }
   }
 }

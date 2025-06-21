@@ -15,7 +15,10 @@ pub enum CommandError {
     SerdeJson(#[from] serde_json::Error),
 
     #[error("Tauri API error: {0}")]
-    TauriAPI(#[from] tauri::api::Error),
+    TauriAPI(#[from] tauri::Error),
+
+    #[error("Tauri API error: {0}")]
+    TauriShellAPI(#[from] tauri_plugin_shell::Error),
 
     #[error("Custom error: {0}")]
     CustomError(String),
