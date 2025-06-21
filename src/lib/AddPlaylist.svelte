@@ -1,12 +1,16 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
   import { addPlaylist } from "../store/playlist";
 
-  const dispatch = createEventDispatcher();
+  let url = $state("");
+  let errorMessage = $state("");
+  let loading = $state();
 
-  let url = "";
-  let errorMessage = "";
-  let loading;
+  interface Props {
+    onClose: () => void;
+    onLoad: () => void;
+  }
+
+  let { onClose, onLoad }: Props = $props();
 
   const urlFormat = "https://www.youtube.com/playlist?list=";
   const error = (msg: string) => {
@@ -21,20 +25,20 @@
     }
     try {
       await addPlaylist(url);
-      dispatch("load");
+      onLoad();
       return true;
     } catch (e) {
-      error(e);
+      error(e.massage);
       return false;
     }
   }
 
   const closeModal = () => {
-    dispatch("close");
+    onClose();
   };
 </script>
 
-<div class="modal" on:click={closeModal} />
+<div class="modal" onclick={closeModal}></div>
 <div class="content">
   <div>
     <input
@@ -43,7 +47,7 @@
       bind:value={url}
     />
     <button
-      on:click={() => {
+      onclick={() => {
         loading = add();
       }}>Add to Library</button
     >

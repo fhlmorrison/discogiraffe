@@ -38,8 +38,8 @@ const rename = (i: number, name: string, path: string = "") => {
 
 export const openFiles = {
   subscribe,
-  set: (files: OpenFileEntry[]) => {
-    set(files);
+  set: (files: OpenFileEntry[] | undefined) => {
+    set(files || []);
     select(0);
   },
   update,

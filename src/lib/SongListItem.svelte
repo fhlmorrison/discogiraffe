@@ -1,18 +1,20 @@
 <script lang="ts">
   import type { OpenFileEntry } from "../store/files";
-  import { createEventDispatcher } from "svelte";
-  export let song: OpenFileEntry;
-  export let index: number;
+  interface Props {
+    song: OpenFileEntry;
+    index: number;
+    onSelect: (index: number) => void;
+  }
 
-  const dispatch = createEventDispatcher();
+  let { song, index, onSelect }: Props = $props();
 
   const select = () => {
-    dispatch("select", index);
+    onSelect(index);
   };
 </script>
 
 <div>
-  <li on:click={select}>
+  <li onclick={select}>
     <div class="li-num">
       {index + 1} |
     </div>

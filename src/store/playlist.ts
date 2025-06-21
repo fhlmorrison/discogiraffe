@@ -93,7 +93,7 @@ async function savePlaylist(playlist: dbPlaylistFull) {
 }
 
 export async function addPlaylist(url: string) {
-  const result = await invoke("add_playlist", { url });
+  const result = await invoke<void>("add_playlist", { url });
   return result;
 }
 

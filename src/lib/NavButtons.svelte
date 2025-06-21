@@ -7,7 +7,7 @@
   {#each routes as route}
     <button
       class={route === $currentTab ? "active" : ""}
-      on:click={() => {
+      onclick={() => {
         currentTab.set(route);
       }}>{route.name}</button
     >

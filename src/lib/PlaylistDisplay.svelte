@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from "svelte/legacy";
+
   // import { open } from "@tauri-apps/plugin-dialog";
   import { settings } from "./../store/settings";
   import type { dbSong } from "../store/playlist";
@@ -14,19 +16,14 @@
   //TODO: Add shift click multi select
   console.log("Playlist", $playlist);
 
-  let downloadDirPath;
+  let downloadDirPath: string;
 
-  let downloadPromise: Promise<any>;
+  let downloadPromise: Promise<any> | undefined = $state();
 
-  const setDownloadDir = async (option) =>
+  const setDownloadDir = async (option?: string) =>
     (downloadDirPath = option || (await downloadDir()));
 
-  $: setDownloadDir($settings?.downloadPath);
-
-  let selected: boolean[] = $playlist?.songs.map((item) => false);
-  $: if ($playlist) {
-    initSelected();
-  }
+  let selected: boolean[] = $state($playlist?.songs.map((item) => false));
 
   const initSelected = () => {
     selected = $playlist?.songs.map((item) => false);
@@ -60,26 +57,34 @@
     // Open reader tab
     currentTab.select("/songreader");
   };
+  run(() => {
+    setDownloadDir($settings?.downloadPath);
+  });
+  run(() => {
+    if ($playlist) {
+      initSelected();
+    }
+  });
 </script>
 
 {#if $playlist}
   <div class="button-row">
     {#await downloadPromise}
-      <button class="download loading" disabled on:click={downloadSelected}
+      <button class="download loading" disabled onclick={downloadSelected}
         >Downloading...</button
       >
     {:then}
-      <button class="download" on:click={downloadSelected}
+      <button class="download" onclick={downloadSelected}
         >Download Selected</button
       >
     {:catch error}
-      <button class="download error" on:click={downloadSelected}
+      <button class="download error" onclick={downloadSelected}
         >Download Selected</button
       >
     {/await}
-    <button class="open" on:click={openDownloaded}>Open Songs</button>
-    <button on:click={initSelected}>Deselect All</button>
-    <button on:click={selectAll}>Select All</button>
+    <button class="open" onclick={openDownloaded}>Open Songs</button>
+    <button onclick={initSelected}>Deselect All</button>
+    <button onclick={selectAll}>Select All</button>
   </div>
   <div class="list">
     {#each $playlist.songs as item, i}

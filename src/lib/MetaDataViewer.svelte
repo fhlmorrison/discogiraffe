@@ -1,31 +1,26 @@
 <script lang="ts">
+  import { run } from "svelte/legacy";
+
   import type { MetadataEntry } from "./loadAssets";
-  import {
-    change_filename,
-    getMetadata,
-    getPictureData,
-    writeMetadata,
-  } from "./loadAssets";
-  import SongPlayer from "./SongPlayer.svelte";
+  import { getMetadata, getPictureData, writeMetadata } from "./loadAssets";
   import type { OpenFileEntry } from "../store/files";
-  import { createEventDispatcher } from "svelte";
 
-  const dispatch = createEventDispatcher();
+  interface Props {
+    song: OpenFileEntry;
+    onChangeFilename: (filename: string) => void;
+  }
 
-  export let song: OpenFileEntry;
+  let { song, onChangeFilename }: Props = $props();
 
   let DEFAULT_IMAGE = "./record.png";
 
-  let fileName: string = "";
-
-  $: setFilename(song?.name);
+  let fileName: string = $state("");
 
   const setFilename = (name: string) => {
     fileName = name ?? "";
   };
 
-  $: loadMetadata(song?.path);
-  let metadata: MetadataEntry[] = [
+  let metadata: MetadataEntry[] = $state([
     {
       key: "Title",
       value: "",
@@ -42,11 +37,11 @@
       key: "AudioSourceUrl",
       value: "",
     },
-  ];
+  ]);
   let backup: MetadataEntry[] = [];
   let error;
 
-  const loadMetadata = async (src) => {
+  const loadMetadata = async (src: string) => {
     try {
       metadata = await getMetadata(src);
       backup = metadata.map((entry) => ({ ...entry }));
@@ -55,7 +50,7 @@
     }
   };
 
-  let editMode: boolean = false;
+  let editMode: boolean = $state(false);
 
   const save = async () => {
     console.log("save");
@@ -90,19 +85,27 @@
     return res;
   };
 
-  let pictureData: string = DEFAULT_IMAGE;
+  let pictureData: string = $state(DEFAULT_IMAGE);
 
   const getPicture = async () => {
     pictureData = (await getPictureData(song?.path)) || DEFAULT_IMAGE;
   };
 
-  $: song && getPicture();
-
-  $: fileName = fileName.replace(/[<>:/\\\|\?"\*\^]/g, "");
-
   const changeFilename = () => {
-    dispatch("changeFilename", fileName);
+    onChangeFilename(fileName);
   };
+  run(() => {
+    setFilename(song?.name);
+  });
+  run(() => {
+    loadMetadata(song?.path);
+  });
+  run(() => {
+    song && getPicture();
+  });
+  run(() => {
+    fileName = fileName.replace(/[<>:/\\\|\?"\*\^]/g, "");
+  });
 </script>
 
 <!-- {song?.name || "No song selected"} -->
@@ -110,10 +113,10 @@
 
 <div>
   {#if editMode}
-    <button class="save" on:click={save}> Save </button>
-    <button class="cancel" on:click={cancel}> Cancel </button>
+    <button class="save" onclick={save}> Save </button>
+    <button class="cancel" onclick={cancel}> Cancel </button>
   {:else}
-    <button on:click={() => (editMode = true)}> Edit </button>
+    <button onclick={() => (editMode = true)}> Edit </button>
     <!-- else content here -->
   {/if}
 </div>
@@ -122,7 +125,7 @@
     <img
       src={pictureData}
       alt="cover art"
-      on:error={() => {
+      onerror={() => {
         pictureData = DEFAULT_IMAGE;
       }}
       height="256px"
@@ -132,7 +135,7 @@
     Filename
     <div class="filename">
       <input type="text" bind:value={fileName} maxlength="100" />
-      <button on:click={changeFilename}> Save </button>
+      <button onclick={changeFilename}> Save </button>
     </div>
   </div>
   {#each metadata as entry}
@@ -143,8 +146,6 @@
     </div>
   {/each}
 </div>
-
-<!-- <SongPlayer /> -->
 
 <style>
   .save {

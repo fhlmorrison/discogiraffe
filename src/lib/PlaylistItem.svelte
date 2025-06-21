@@ -1,9 +1,13 @@
 <script lang="ts">
   import FaPlay from "svelte-icons/fa/FaPlay.svelte";
   import type { dbSong } from "../store/playlist";
-  export let item: dbSong;
 
-  export let selected = false;
+  interface Props {
+    item: dbSong;
+    selected?: boolean;
+  }
+
+  let { item, selected = $bindable(false) }: Props = $props();
 
   const fmtMSS = (s: number) => {
     return (s - (s %= 60)) / 60 + (9 < s ? ":" : ":0") + s;

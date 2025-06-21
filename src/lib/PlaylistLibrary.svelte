@@ -12,13 +12,13 @@
 
   import { currentTab } from "../store/tabs";
 
-  let refreshPromise;
+  let refreshPromise = $state<Promise<void> | undefined>();
 
   onMount(() => {
     loadList();
   });
 
-  let adding = false;
+  let adding = $state(false);
 
   const openModal = () => {
     adding = true;
@@ -51,11 +51,11 @@
 </script>
 
 <div class="grid">
-  <div class="card add" on:click={openModal}>+</div>
+  <div class="card add" onclick={openModal}>+</div>
   {#if adding}
     <AddPlaylist
-      on:close={closeModal}
-      on:load={() => {
+      onClose={closeModal}
+      onLoad={() => {
         closeModal();
         loadList();
       }}
@@ -64,14 +64,14 @@
   {#each $playlistLibrary as playlist}
     <div
       class="card playlist"
-      on:click={() => choosePlaylist(playlist)}
-      on:keydown={() => {}}
+      onclick={() => choosePlaylist(playlist)}
+      onkeydown={() => {}}
     >
       {#await refreshPromise}
         <button
           class="refresh loading"
           disabled
-          on:click={(e) => {
+          onclick={(e) => {
             e.preventDefault();
             e.stopPropagation();
             refreshPlaylist(playlist);
@@ -80,7 +80,7 @@
       {:then}
         <button
           class="refresh"
-          on:click={(e) => {
+          onclick={(e) => {
             e.preventDefault();
             e.stopPropagation();
             refreshPlaylist(playlist);
@@ -89,7 +89,7 @@
       {:catch error}
         <button
           class="refresh error"
-          on:click={(e) => {
+          onclick={(e) => {
             e.preventDefault();
             e.stopPropagation();
             refreshPlaylist(playlist);

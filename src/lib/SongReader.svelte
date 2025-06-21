@@ -9,21 +9,20 @@
   const openFolder = () =>
     loadSongsFromFolder().then((res) => {
       console.log(res);
-      $openFiles = res;
+      $openFiles = res || [];
     });
 
   const saveSongs = () => {
     openFiles.save();
   };
 
-  $: selectedFile = $openFiles[$selectedIndex];
+  let selectedFile = $derived($openFiles[$selectedIndex]);
 
   const selectSong = (index: number) => {
     openFiles.select(index);
   };
 
-  const changeFilename = (e) => {
-    const fileName = e.detail;
+  const changeFilename = (fileName: string) => {
     change_filename(selectedFile.path, fileName).then((resultingPath) => {
       console.log(`"${selectedFile.name}"\nrenamed to\n"${fileName}"`);
       openFiles.rename($selectedIndex, fileName, resultingPath);
@@ -34,14 +33,14 @@
 <div class="col">
   <div class="row">
     <div>
-      <button on:click={openFolder}>Open Folder</button>
+      <button onclick={openFolder}>Open Folder</button>
       {#if $openFiles && $openFiles.length > 0}
-        <button on:click={saveSongs}>Save songs to db</button>
+        <button onclick={saveSongs}>Save songs to db</button>
       {/if}
     </div>
   </div>
 
-  <MetaDataViewer song={selectedFile} on:changeFilename={changeFilename} />
+  <MetaDataViewer song={selectedFile} onChangeFilename={changeFilename} />
 </div>
 
 {#if openFiles}
@@ -51,7 +50,7 @@
         <SongListItem
           song={file}
           index={i}
-          on:select={(e) => selectSong(e.detail)}
+          onSelect={(idx) => selectSong(idx)}
         />
       {/each}
     </ol>

@@ -50,7 +50,7 @@ const processEntries = async (dirPath: string, entries: DirEntry[]) =>
 
 export async function loadAssetsFromFolder() {
   const dirPath = await openFolder();
-  if (dirPath === undefined) return;
+  if (!dirPath) return;
   const entries = await readDir(dirPath);
   const files = await processEntries(dirPath, entries);
   return files.filter(({ name }) =>
@@ -89,7 +89,7 @@ export async function loadSongsFromPath(files: string[]) {
 export async function loadSongsFromPlaylist(playlist: dbPlaylistFull) {
   const localSongs = playlist.songs
     .filter((song) => song.path)
-    .map((song) => song.path);
+    .map((song) => song.path as string);
   return await loadSongsFromPath(localSongs);
 }
 

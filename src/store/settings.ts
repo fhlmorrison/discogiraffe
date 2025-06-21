@@ -6,8 +6,6 @@ import {
   writeTextFile,
 } from "@tauri-apps/plugin-fs";
 
-type SettingValue = string | number | boolean;
-
 // Types: [dropdown, text field, number field, boolean toggle]
 
 // Folder Path
@@ -41,10 +39,11 @@ type BooleanSettingEntry = {
   type: "boolean";
 };
 
-export type SettingEntry =
+export type SettingEntry = (
   | DropdownSettingEntry
   | BooleanSettingEntry
-  | FolderPathSettingEntry;
+  | FolderPathSettingEntry
+) & { key: keyof Settings };
 
 export const settingList: SettingEntry[] = [
   {
@@ -78,12 +77,14 @@ export const settingList: SettingEntry[] = [
 ];
 
 type Settings = {
-  [key: string]: SettingValue;
+  theme: string;
+  downloadPath?: string;
+  autoPlay: boolean;
 };
 
-const defaults = {};
-
-const { subscribe, set, update } = writable<Settings>({});
+const { subscribe, set, update } = writable<Settings>(
+  Object.fromEntries(settingList.map((e) => [e.key, e.default])) as Settings
+);
 
 const load = async () => {
   // Check if settings file exists
@@ -111,7 +112,7 @@ const save = async () => {
 };
 
 const getValue = (e: SettingEntry) => {
-  return get(settings[e.key]) ?? e.default;
+  return get(settings)[e.key] ?? e.default;
 };
 
 export const settings = {

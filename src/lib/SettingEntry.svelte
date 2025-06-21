@@ -3,8 +3,12 @@
   import type { SettingEntry } from "../store/settings";
   import { onMount } from "svelte";
   import { openFolder } from "./loadAssets";
-  export let entry: SettingEntry;
-  export let value;
+  interface Props {
+    entry: SettingEntry;
+    value: any;
+  }
+
+  let { entry, value = $bindable() }: Props = $props();
   const getValue = (e: SettingEntry) => {
     value = $settings[e.key] ?? e.default;
   };
@@ -26,7 +30,7 @@
       {/each}
     </select>
   {:else if entry.type === "folderPath"}
-    <button on:click={chooseFolder}>Choose Folder</button>
+    <button onclick={chooseFolder}>Choose Folder</button>
     <span>{value}</span>
   {/if}
 </div>

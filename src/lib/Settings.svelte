@@ -4,13 +4,13 @@
   import FaCog from "svelte-icons/fa/FaCog.svelte";
   import { onMount } from "svelte";
 
-  let values = { ...$settings };
+  let values = $state({ ...$settings });
 
   onMount(() => {
     settings.load();
   });
 
-  let modalOpen = false;
+  let modalOpen = $state(false);
   const closeModal = () => {
     modalOpen = false;
     values = { ...$settings };
@@ -25,21 +25,21 @@
 
 <button
   class="settings"
-  on:click={() => {
+  onclick={() => {
     modalOpen = true;
   }}
 >
   <FaCog />
 </button>
 {#if modalOpen}
-  <div class="modal" on:click={closeModal} />
+  <div class="modal" onclick={closeModal}></div>
   <div class="modal-content">
     <h1>Settings</h1>
     {#each settingList as setting}
       <SettingEntry entry={setting} bind:value={values[setting.key]} />
     {/each}
-    <button class="close" on:click={closeModal}>Close</button>
-    <button class="save" on:click={saveChanges}>Save</button>
+    <button class="close" onclick={closeModal}>Close</button>
+    <button class="save" onclick={saveChanges}>Save</button>
   </div>
 {/if}
 

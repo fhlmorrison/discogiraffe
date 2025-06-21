@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from "svelte/legacy";
+
   // ignore this
   import FaStepBackward from "svelte-icons/fa/FaStepBackward.svelte";
   import FaStepForward from "svelte-icons/fa/FaStepForward.svelte";
@@ -8,21 +10,23 @@
   import { settings } from "../store/settings";
   import { openFiles, selectedIndex } from "../store/files";
   // import { currentTime } from "./../store/player";
-  let time = 0;
-  let audioPlayer: HTMLAudioElement;
+  let time = $state(0);
+  let audioPlayer: HTMLAudioElement | undefined = $state();
   // audioPlayer.controls = false;
   // $: audioPlayer.src = url;
   // let currentTime = 0;
-  let duration = 0;
-  let volume = 0.75;
-  $: console.log("Volume:", volume);
-  let paused = true;
+  let duration = $state(0);
+  let volume = $state(0.75);
+  run(() => {
+    console.log("Volume:", volume);
+  });
+  let paused = $state(true);
 
-  let progressElement: HTMLDivElement;
+  let progressElement: HTMLDivElement | undefined = $state();
 
-  $: url = $openFiles[$selectedIndex]?.url ?? "";
+  let url = $derived($openFiles[$selectedIndex]?.url ?? "");
 
-  const cleanTime = (seconds) => {
+  const cleanTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds / 60) % 60);
     const secs = Math.floor(seconds % 60);
@@ -31,19 +35,22 @@
     }${secs}`;
   };
 
-  const jumpto = (e) => {
+  const jumpto = (e: MouseEvent) => {
+    if (!progressElement || !audioPlayer) return;
     const rect = progressElement.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const percent = x / rect.width;
     audioPlayer.currentTime = percent * duration;
   };
-  $: url && (paused = true);
+  run(() => {
+    url && (paused = true);
+  });
 
   const prev = () => {
     openFiles.prev();
     if ($settings["autoPlay"]) {
       setTimeout(() => {
-        audioPlayer.play();
+        audioPlayer?.play();
       }, 100);
     }
   };
@@ -52,7 +59,7 @@
     openFiles.next();
     if ($settings["autoPlay"]) {
       setTimeout(() => {
-        audioPlayer.play();
+        audioPlayer?.play();
       }, 100);
     }
   };
@@ -67,19 +74,19 @@
 <div class="song-player">
   <div class="controls-row">
     <div class="controls">
-      <div class="button skip" on:click={prev}>
+      <div class="button skip" onclick={prev}>
         <FaStepBackward />
       </div>
       {#if paused}
-        <div class="button play" on:click={() => audioPlayer.play()}>
+        <div class="button play" onclick={() => audioPlayer?.play()}>
           <FaPlayCircle />
         </div>
       {:else}
-        <div class="button play" on:click={() => audioPlayer.pause()}>
+        <div class="button play" onclick={() => audioPlayer?.pause()}>
           <FaPauseCircle />
         </div>
       {/if}
-      <div class="button skip" on:click={next}>
+      <div class="button skip" onclick={next}>
         <FaStepForward />
       </div>
     </div>
@@ -88,11 +95,11 @@
     <div class="duration">
       {cleanTime(time)} / {cleanTime(duration)}
     </div>
-    <div class="progress" on:click={jumpto} bind:this={progressElement}>
+    <div class="progress" onclick={jumpto} bind:this={progressElement}>
       <div
         class="progress-bar"
         style={`--progress: ${(time / duration) * 100}%`}
-      />
+      ></div>
     </div>
     <div class="volume">
       <div class="volume-icon">
@@ -104,7 +111,11 @@
         max="1"
         step="0.01"
         bind:value={volume}
-        on:input={() => (audioPlayer.volume = volume)}
+        oninput={() => {
+          if (audioPlayer) {
+            audioPlayer.volume = volume;
+          }
+        }}
       />
     </div>
   </div>
@@ -114,8 +125,8 @@
     bind:paused
     bind:currentTime={time}
     bind:duration
-    on:ended={songEnded}
-  />
+    onended={songEnded}
+  ></audio>
 </div>
 
 <style>

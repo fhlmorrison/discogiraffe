@@ -3,6 +3,8 @@
   import Settings from "./lib/Settings.svelte";
   import SongPlayer from "./lib/SongPlayer.svelte";
   import NavButtons from "./lib/NavButtons.svelte";
+
+  const SvelteComponent = $derived($currentTab.component);
 </script>
 
 <header>
@@ -12,7 +14,7 @@
 
 <main class="container">
   <!-- <Router /> -->
-  <svelte:component this={$currentTab.component} />
+  <SvelteComponent />
 </main>
 
 <footer>
